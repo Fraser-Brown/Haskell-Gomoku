@@ -1,3 +1,5 @@
+-- module with function for drawing the board to Tereminal
+
 module Draw(drawWorld) where
 
 import Graphics.Gloss

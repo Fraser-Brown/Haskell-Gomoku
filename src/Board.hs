@@ -1,3 +1,5 @@
+-- module to model the board of the game and other elements of the game state
+
 module Board where
 
 data Col = Black | White

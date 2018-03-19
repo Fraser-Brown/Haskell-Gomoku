@@ -1,3 +1,5 @@
+-- module to take input events, acting as an API to then call other functions in other modules to process them
+
 module Input(handleInput) where
 
 import Graphics.Gloss.Interface.Pure.Game

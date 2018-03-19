@@ -1,3 +1,5 @@
+-- contains the overall control of the game and how graphics, event handlers etc. are initialised
+
 module Main where
 
 import Graphics.Gloss
