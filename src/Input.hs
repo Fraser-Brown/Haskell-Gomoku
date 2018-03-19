@@ -5,7 +5,7 @@ module Input(handleInput) where
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss
 import Board
-import AI
+import MinimaxAI
 
 import Debug.Trace
 
