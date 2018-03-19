@@ -43,13 +43,36 @@ initWorld = World initBoard Black -- function starting the game world with the d
 -- Play a move on the board; return 'Nothing' if the move is invalid
 -- (e.g. outside the range of the board, or there is a piece already there)
 makeMove :: Board -> Colour -> Position -> Maybe Board
-makeMove = undefined
+
+-- given the board to change, and colour and position to put a piece at, put that colour at that pos and return or throw erorr with Nothing if invalid
+makeMove board colour pos = if 0 <= fst pos < size board && 0 <= snd pos < size board -- if a valid input
+                                then do pieces board ++ (pos, colour) -- add new piece to board
+                                        board -- return the board
+                                else Nothing -- indicating an error
 
 -- Check whether the board is in a winning state for either player.
 -- Returns 'Nothing' if neither player has won yet
 -- Returns 'Just c' if the player 'c' has won
 checkWon :: Board -> Maybe Colour
-checkWon = undefined
+{- for every piece, try going all directions
+    if any have matching colour, keep going in them until target in a row are found -> return that colour or they're empty / diff colour -> next piece
+-}
+checkWon board = [if checkPiece (pos,clr) pieces target size != Nothing then checkPiece (pos,clr) | (pos,clr) <- pieces board]
+                    where checkPiece (pos,clr) pieces target size = do let incs = [-1...1]
+                                                                        then [if checkDir x y (pos,clr) pieces target size 0 \= Nothing then checkDir x y (pos,clr) pieces target size 0 | x <- incs, y <- incs]
+                                                                        else then Nothing
+
+checkDir :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int -> Maybe Colour
+checkDir xInc yInc (pos,clr) pieces target size incsDone = if not checkCoordsMatching xInc yInc (pos,clr) pieces (incsDone + 1) then Nothing
+                                                            else if incsDone == target then Just clr
+                                                            else xInc yInc (pos,clr) pieces target size (incsDone + 1)
+
+checkCoordsMatching :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int
+checkCoordsMatching xInc yInc (pos,clr) pieces jumps = if getColourAtPos pieces (fst pos + jumps * xInc, snd pos + jumps * yInc) == clr
+
+getColourAtPos :: [(Position, Colour)] -> Int -> Int -> Maybe Colour
+getColourAtPos pieces x y = [if fst pos == x && snd pos == y then clr | (pos, clr) <- pieces]
+                              Nothing
 
 {- Hint: One way to implement 'checkWon' would be to write functions
 which specifically check for lines in all 8 possible directions
