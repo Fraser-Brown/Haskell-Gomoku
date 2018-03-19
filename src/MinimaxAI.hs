@@ -5,11 +5,11 @@ module MinimaxAI where
 import Board
 
 data GameTree = GameTree { game_board :: Board,
-                           game_turn :: Col,
+                           game_turn :: Colour,
                            next_moves :: [(Position, GameTree)] }
 
 -- Given a function to generate plausible moves (i.e. board positions)
--- for a player (Col) on a particular board, generate a (potentially)
+-- for a player (represented in Colour) on a particular board, generate a (potentially)
 -- infinite game tree.
 --
 -- (It's not actually infinite since the board is finite, but it's sufficiently
@@ -19,9 +19,9 @@ data GameTree = GameTree { game_board :: Board,
 -- Rather than generating every possible move (which would result in an
 -- unmanageably large game tree!) it could, for example, generate moves
 -- according to various simpler strategies.
-buildTree :: (Board -> Col -> [Position]) -- ^ Move generator
+buildTree :: (Board -> Colour -> [Position]) -- ^ Move generator
              -> Board -- ^ board state
-             -> Col -- ^ player to play next
+             -> Colour -- ^ player to play next
              -> GameTree
 buildTree gen b c = let moves = gen b c in -- generated moves
                         GameTree b c (mkNextStates moves)

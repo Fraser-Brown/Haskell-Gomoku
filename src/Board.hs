@@ -2,17 +2,17 @@
 
 module Board where
 
-data Col = Black | White
+data Colour = Black | White -- Colours of the pieces
   deriving Show
 
-other :: Col -> Col
+other :: Colour -> Colour -- find the opposite Colour to one given
 other Black = White
 other White = Black
 
-type Position = (Int, Int)
+type Position = (Int, Int) -- x and y coords of a piece on the board
 
 -- A Board is a record containing the board size (a board is a square grid,
--- n * n), the number of pieces in a row required to win, and a list
+-- n * n), the number of pieces in a row required to win (target), and a list
 -- of pairs of position and the colour at that position.  So a 10x10 board
 -- for a game of 5 in a row with a black piece at 5,5 and a white piece at 8,7
 -- would be represented as:
@@ -21,7 +21,7 @@ type Position = (Int, Int)
 
 data Board = Board { size :: Int,
                      target :: Int,
-                     pieces :: [(Position, Col)]
+                     pieces :: [(Position, Colour)]
                    }
   deriving Show
 
@@ -36,19 +36,19 @@ initBoard = Board 6 3 []
 -- will be useful (information for the AI, for example, such as where the
 -- most recent moves were).
 data World = World { board :: Board,
-                     turn :: Col }
+                     turn :: Colour }
 
-initWorld = World initBoard Black
+initWorld = World initBoard Black -- function starting the game world with the default initial board, with it being Black's go to start
 
 -- Play a move on the board; return 'Nothing' if the move is invalid
 -- (e.g. outside the range of the board, or there is a piece already there)
-makeMove :: Board -> Col -> Position -> Maybe Board
+makeMove :: Board -> Colour -> Position -> Maybe Board
 makeMove = undefined
 
 -- Check whether the board is in a winning state for either player.
 -- Returns 'Nothing' if neither player has won yet
 -- Returns 'Just c' if the player 'c' has won
-checkWon :: Board -> Maybe Col
+checkWon :: Board -> Maybe Colour
 checkWon = undefined
 
 {- Hint: One way to implement 'checkWon' would be to write functions
@@ -57,13 +57,13 @@ which specifically check for lines in all 8 possible directions
 
 In these functions:
 To check for a line of n in a row in a direction D:
-For every position ((x, y), col) in the 'pieces' list:
-- if n == 1, the colour 'col' has won
+For every position ((x, y), Colour) in the 'pieces' list:
+- if n == 1, the colour 'Colour' - paramater given - has won
 - if n > 1, move one step in direction D, and check for a line of
   n-1 in a row.
 -}
 
 -- An evaluation function for a minimax search. Given a board and a colour
 -- return an integer indicating how good the board is for that colour.
-evaluate :: Board -> Col -> Int
+evaluate :: Board -> Colour -> Int
 evaluate = undefined
