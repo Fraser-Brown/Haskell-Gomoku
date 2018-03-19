@@ -57,7 +57,7 @@ checkWon :: Board -> Maybe Colour
 {- for every piece, try going all directions
     if any have matching colour, keep going in them until target in a row are found -> return that colour or they're empty / diff colour -> next piece
 -}
-checkWon board = [if checkPiece (pos,clr) pieces target size /= Nothing then checkPiece (pos,clr) | (pos,clr) <- pieces board]
+checkWon board = [if checkPiece (pos,clr) pieces board target board size board /= Nothing then checkPiece (pos,clr) pieces board target board size board | (pos,clr) <- pieces board]
                     where checkPiece (pos,clr) pieces target size = do let incs = [-1...1]
                                                                         then [if checkDir x y (pos,clr) pieces target size 0 \= Nothing then checkDir x y (pos,clr) pieces target size 0 | x <- incs, y <- incs]
                                                                         else then Nothing
