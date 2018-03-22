@@ -63,14 +63,19 @@ checkWon board = [if checkPiece (pos,clr) pieces board target board size board /
                                                                         else then Nothing
 
 checkDir :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int -> Maybe Colour
-checkDir xInc yInc (pos,clr) pieces target size incsDone = if not checkCoordsMatching xInc yInc (pos,clr) pieces (incsDone + 1) then Nothing
+-- check if there are the no of same coloured pieces in a row in 1 direction from a given start point to win
+-- each direction is rerpresented by a dx and dy - showing how much to add/subtract at each jump
+checkDir dx dy (pos,clr) pieces target size incsDone = if not checkCoordsMatching dx dy (pos,clr) pieces (incsDone + 1) then Nothing
                                                             else if incsDone == target then Just clr
-                                                            else xInc yInc (pos,clr) pieces target size (incsDone + 1)
+                                                            else dx dy (pos,clr) pieces target size (incsDone + 1)
 
 checkCoordsMatching :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int
-checkCoordsMatching xInc yInc (pos,clr) pieces jumps = if getColourAtPos pieces (fst pos + jumps * xInc, snd pos + jumps * yInc) == clr
+-- check the pieces at 2 coords, if present, have the same colour
+-- return false if there aren't pieces at both points or if the pieces at both aren't the same colour
+checkCoordsMatching dx dy (pos,clr) pieces jumps = if getColourAtPos pieces (fst pos + jumps * dx, snd pos + jumps * dy) == clr
 
 getColourAtPos :: [(Position, Colour)] -> Int -> Int -> Maybe Colour
+-- get the colour of the piece at a given position; if not one there return Nothing
 getColourAtPos pieces x y = [if fst pos == x && snd pos == y then clr | (pos, clr) <- pieces]
                               Nothing
 
