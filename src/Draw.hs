@@ -37,12 +37,21 @@ drawTargetReminder tgt = $ Text "Target: " ++ show tgt ++ " in a row"
 
 drawGrid :: Int -> Picture
 -- draw the lines of the game grid, where n is the grid width and height
-drawGrid n = 
+drawGrid n = Pictures [verticalLines n, horiLines n]
+
+verticalLines :: Int -> Picture
+verticalLines n = Pictures [drawvertLine no n | no <- [1..n]]
+                    where drawvertLine num size = 
+
+horiLines :: Int -> Picture
+horiLines n = Pictures [drawhoriLine no n | no <- [1..n]]
+                where drawhoriLine num size = 
 
 
-drawPieces :: [(Position, Colour)] -> Int -> Picture
+drawPieces :: [(Position, Colour)] -> Picture
 -- draw each piece on the board
-drawPieces pieces boardSize = 
+drawPieces pieces = Pictures [drawPiece p | p <- pieces]
+                        where drawPiece p = 
 
 drawTitle :: Picture
 -- draw the title of the game
