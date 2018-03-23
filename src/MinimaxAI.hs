@@ -8,6 +8,8 @@ data GameTree = GameTree { game_board :: Board,
                            game_turn :: Colour,
                            next_moves :: [(Position, GameTree)] }
 
+
+                           
 -- Given a function to generate plausible moves (i.e. board positions)
 -- for a player (represented in Colour) on a particular board, generate a (potentially)
 -- infinite game tree.
@@ -34,6 +36,8 @@ buildTree gen b c = let moves = gen b c in -- generated moves
                Just b' -> (pos, buildTree gen b' (other c)) : mkNextStates xs
                              -- successful, make move and build tree from
                              -- here for opposite player
+         
+                             
 
 -- Get the best next move from a (possibly infinite) game tree. This should
 -- traverse the game tree up to a certain depth, and pick the move which
@@ -43,6 +47,11 @@ getBestMove :: Int -- ^ Maximum search depth
                -> GameTree -- ^ Initial game tree
                -> Position
 getBestMove = undefined
+-- for small enough trees that it'll be reasonably quick to execute, try pruning the tree before choosing a move:
+-- try to remove the moves in the tree that will lead to imminent defeat (where possible)
+-- also then prune ones that lead to a v low and/or lower than current eval score for the player
+
+
 
 -- Update the world state after some time has passed
 updateWorld :: Float -- ^ time since last update (you can ignore this)
@@ -64,7 +73,10 @@ updateWorld t w = w
  player has won and display a message if so.
 -}
 
+
+
 -- An evaluation function for a minimax search. Given a board and a colour
 -- return an integer indicating how good the board is for that colour.
 evaluateBoard :: Board -> Colour -> Int
+-- maybe score = no of combos one away from target * 5 + 2 away * 2 + 3 away * 1
 evaluateBoard board colour =
