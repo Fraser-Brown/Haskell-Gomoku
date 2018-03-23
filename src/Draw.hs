@@ -14,22 +14,36 @@ import Board
 --
 -- This will need to extract the Board from the world state and draw it
 -- as a grid plus pieces.
-drawWorld :: World -> Picture
-drawWorld w = do let board = board world
-                then do let go = show turn world
-                    then drawPicture world board turn
+--drawWorld :: World -> Picture
+drawWorld w = display 
+(InWindow
+       "Gomoku"     -- window title
+        (1000, 700)       -- window size
+        (10, 10))        -- window position
+white                    -- background color
+gamePicture world              -- Picture object to draw, made of composite parts
 
--- http://andrew.gibiansky.com/blog/haskell/haskell-gloss/
-
-drawPicture :: World -> Board -> String -> Picture
-drawPicture world board turnstr
+gamePicture :: World -> Picture
+-- get composite parts to arrange combined Picture to display
+gamePicture world = Pictures [drawNextPlayer show turn board, drawTargetReminder target board, drawGrid size board, drawPieces pieces board size board, drawTitle]
 
 drawNextPlayer :: String -> Picture
+-- draw text informing the user of which player (Black/White) is next
+drawNextPlayer nPlyr = $ Text nPlyr ++ " has the next move"
 
 drawTargetReminder :: Int -> Picture
+-- draw text informing user of the target x in a row to get
+drawTargetReminder tgt = $ Text "Target: " ++ show tgt ++ " in a row"
 
-drawGrid :: Picture
+drawGrid :: Int -> Picture
+-- draw the lines of the game grid, where n is the grid width and height
+drawGrid n = 
 
-drawPieces :: [(Position, Colour)] -> Picture
+
+drawPieces :: [(Position, Colour)] -> Int -> Picture
+-- draw each piece on the board
+drawPieces pieces boardSize = 
 
 drawTitle :: Picture
+-- draw the title of the game
+drawTitle = $ Text "Gomoku"
