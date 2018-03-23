@@ -63,3 +63,8 @@ updateWorld t w = w
  In a complete implementation, 'updateWorld' should also check if either
  player has won and display a message if so.
 -}
+
+-- An evaluation function for a minimax search. Given a board and a colour
+-- return an integer indicating how good the board is for that colour.
+evaluateBoard :: Board -> Colour -> Int
+evaluateBoard board colour =

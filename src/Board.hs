@@ -94,4 +94,5 @@ For every position ((x, y), Colour) in the 'pieces' list:
 -- An evaluation function for a minimax search. Given a board and a colour
 -- return an integer indicating how good the board is for that colour.
 evaluate :: Board -> Colour -> Int
-evaluate = undefined
+evaluate board clr = evaluateBoard board clr
+-- just passes to method in MinimaxAI.hs, where I think function is more logical to be defined
