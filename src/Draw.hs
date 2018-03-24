@@ -39,20 +39,27 @@ drawGrid :: Int -> Picture
 -- draw the lines of the game grid, where n is the grid width and height
 drawGrid n = Pictures [verticalLines n, horiLines n]
 
+grey :: Color -- this is the type for colours in gloss, not the Colour type used for pieces/players
+grey = makeColor 122 122 122 1
+
+-- TODO: finish the next 2 functions to draw correctly positioned grid lines for the Gomoku board
+
 verticalLines :: Int -> Picture
 verticalLines n = Pictures [drawvertLine no n | no <- [1..n]]
-                    where drawvertLine num size = 
+                    where drawvertLine num size = grey Seg
 
 horiLines :: Int -> Picture
 horiLines n = Pictures [drawhoriLine no n | no <- [1..n]]
-                where drawhoriLine num size = 
-
+                where drawhoriLine num size = grey Seg
 
 drawPieces :: [(Position, Colour)] -> Picture
 -- draw each piece on the board
 drawPieces pieces = Pictures [drawPiece p | p <- pieces]
-                        where drawPiece p = 
+                        where drawPiece p = if snd p == White then white Circle 2
+                                                else then black Circle 2
 
 drawTitle :: Picture
 -- draw the title of the game
 drawTitle = $ Text "Gomoku"
+
+--TODO: add Translate method to all methods drawing Picture elements, to correctly position them on the window

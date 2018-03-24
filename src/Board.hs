@@ -2,7 +2,7 @@
 
 module Board where
 
-data Colour = Black | White -- Colours of the pieces
+data Colour = Black | White -- this is the type for colours of pieces, not the Color type in gloss used to colour Picture elements
   deriving Show
 
 other :: Colour -> Colour -- find the opposite Colour to one given
