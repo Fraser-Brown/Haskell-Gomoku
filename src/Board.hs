@@ -57,10 +57,11 @@ checkWon :: Board -> Maybe Colour
 {- for every piece, try going all directions
     if any have matching colour, keep going in them until target in a row are found -> return that colour or they're empty / diff colour -> next piece
 -}
-checkWon board = [if checkPiece (pos,clr) pieces board target board size board /= Nothing then checkPiece (pos,clr) pieces board target board size board | (pos,clr) <- pieces board]
-                    where checkPiece (pos,clr) pieces target size = do let incs = [-1...1]
-                                                                        then [if checkDir x y (pos,clr) pieces target size 0 \= Nothing then checkDir x y (pos,clr) pieces target size 0 | x <- incs, y <- incs]
-                                                                        else then Nothing
+checkWon board = [if res /= Nothing then res | (pos,clr) <- pieces board, res = checkPiece (pos,clr) board]
+                    then Nothing -- fallback
+                    where checkPiece (pos,clr) board = do let incs = [-1...1], pieces = pieces board, target = target board, size = size board
+                                                          then [if wonInDir \= Nothing then wonInDir | dx <- incs, dy <- incs, wonInDir = checkDir dx dy (pos,clr) pieces target size 0]
+                                                          then Nothing -- fallback
 
 checkDir :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int -> Maybe Colour
 -- check if there are the no of same coloured pieces in a row in 1 direction from a given start point to win
@@ -76,8 +77,8 @@ checkCoordsMatching dx dy (pos,clr) pieces jumps = if getColourAtPos pieces (fst
 
 getColourAtPos :: [(Position, Colour)] -> Int -> Int -> Maybe Colour
 -- get the colour of the piece at a given position; if not one there return Nothing
-getColourAtPos pieces x y = [if fst pos == x && snd pos == y then clr | (pos, clr) <- pieces]
-                              Nothing
+getColourAtPos pieces x y = [if isPiece then clr | (pos, clr) <- pieces, isPiece = (fst pos == x && snd pos == y)]
+                                then Nothing -- fallback
 
 {- Hint: One way to implement 'checkWon' would be to write functions
 which specifically check for lines in all 8 possible directions

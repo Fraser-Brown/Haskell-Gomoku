@@ -45,12 +45,12 @@ grey = makeColor 122 122 122 1
 -- TODO: finish the next 2 functions to draw correctly positioned grid lines for the Gomoku board
 
 verticalLines :: Int -> Picture
-verticalLines n = Pictures [drawvertLine no n | no <- [1..n]]
-                    where drawvertLine num size = grey Seg
+verticalLines noLines = Pictures [drawvertLine n noLines | n <- [1..noLines]]
+                        where drawvertLine lineNo noLines = grey Seg
 
 horiLines :: Int -> Picture
-horiLines n = Pictures [drawhoriLine no n | no <- [1..n]]
-                where drawhoriLine num size = grey Seg
+horiLines noLines = Pictures [drawhoriLine n noLines | n <- [1..noLines]]
+                        where drawhoriLine lineNo noLines = grey Seg
 
 drawPieces :: [(Position, Colour)] -> Picture
 -- draw each piece on the board
