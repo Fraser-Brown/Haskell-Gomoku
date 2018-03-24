@@ -40,6 +40,8 @@ data World = World { board :: Board,
 
 initWorld = World initBoard Black -- function starting the game world with the default initial board, with it being Black's go to start
 
+--TODO: refine, test and debug the methods below
+
 -- Play a move on the board; return 'Nothing' if the move is invalid
 -- (e.g. outside the range of the board, or there is a piece already there)
 makeMove :: Board -> Colour -> Position -> Maybe Board

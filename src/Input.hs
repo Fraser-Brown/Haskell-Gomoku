@@ -26,6 +26,8 @@ handleInput (EventKey (Char k) Up _ _) b
     = trace ("Key " ++ show k ++ " up") b
 handleInput e b = b
 
+--TODO: Implement appropriate event handlers for input events such as clicking on the board (above); these will need to identify which board position a mouse location maps to, in particular
+
 {- Hint: when the 'World' is in a state where it is the human player's
  turn to move, a mouse press event should calculate which board position
  a click refers to, and update the board accordingly.

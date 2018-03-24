@@ -36,8 +36,14 @@ buildTree gen b c = let moves = gen b c in -- generated moves
                Just b' -> (pos, buildTree gen b' (other c)) : mkNextStates xs
                              -- successful, make move and build tree from
                              -- here for opposite player
-         
-                             
+
+-- generate a list of possible moves to make, in the format of a list of Positions (to move to)
+-- given the current Board and the Colour representing the player who's turn it is
+gen :: Board -> Colour -> [Position]
+-- Rather than generating every possible move (which would result in an
+-- unmanageably large game tree!) it could, for example, generate moves
+-- according to various simpler strategies.
+gen board turnColour = undefined -- TODO: make this method
 
 -- Get the best next move from a (possibly infinite) game tree. This should
 -- traverse the game tree up to a certain depth, and pick the move which
@@ -46,10 +52,8 @@ buildTree gen b c = let moves = gen b c in -- generated moves
 getBestMove :: Int -- ^ Maximum search depth
                -> GameTree -- ^ Initial game tree
                -> Position
-getBestMove = undefined
--- for small enough trees that it'll be reasonably quick to execute, try pruning the tree before choosing a move:
--- try to remove the moves in the tree that will lead to imminent defeat (where possible)
--- also then prune ones that lead to a v low and/or lower than current eval score for the player
+getBestMove depthLimit tree currentDepth = if currentDepth >= depthLimit then return Position of move with best evaulateBoard score --TODO: convert this from pseudocode
+                                              else then return max of getBestMove of each move in next_moves
 
 
 
@@ -57,7 +61,11 @@ getBestMove = undefined
 updateWorld :: Float -- ^ time since last update (you can ignore this)
             -> World -- ^ current world state
             -> World
-updateWorld t w = w
+updateWorld t w = addMoveToWorld w movePos turn, movePos = getBestMove (buildTree gen board world turn world)
+                    where addMoveToWorld :: World -> Position -> Colour -> World
+                          addMoveToWorld world movePos colourTurn = pieces board world ++ (movePos, colourTurn)
+                                                                    then turn world = other turn world
+                                                                    then world
 
 {- Hint: 'updateWorld' is where the AI gets called. If the world state
  indicates that it is a computer player's turn, updateWorld should use
@@ -78,5 +86,4 @@ updateWorld t w = w
 -- An evaluation function for a minimax search. Given a board and a colour
 -- return an integer indicating how good the board is for that colour.
 evaluateBoard :: Board -> Colour -> Int
--- maybe score = no of combos one away from target * 5 + 2 away * 2 + 3 away * 1
-evaluateBoard board colour =
+evaluateBoard board colour = no of combos one away from target * 5 + 2 away * 2 + 3 away * 1 --TODO: convert this from pseudocode
