@@ -70,15 +70,25 @@ genAllMoves :: Board -> Colour -> [Position]
 
 make list of Positions representing moves to assess for evaluation scores, constructed according to the above order
 -}
-genBlockEnemyCombosMoves board colour = do let pieces = pieces board, taget = target board, coordRange = [0 .. size board - 1]
-                                            then 
+genBlockEnemyCombosMoves board colour = do let pieces = pieces board, target = target board, coordRange = [0 .. size board - 1], moves = []
+-- check all enemy pieces; look in all directions. if there is a piece/pieces in that direction of enemy colour, and remaining space to reach target, add move to put piece in next space
+                                            [if snd piece \= colour moves ++ getBlockEnemyCombosMovesFromEnemyPiece piece pieces target | piece <- pieces]
+                                                then moves
+                                                where getBlockEnemyCombosMovesFromEnemyPiece piece pieces = do let deltas = [-1..1], results = []
+                                                                                                                --then [if pieces contains piece in direction && its colour \= colour find next in that dir that's empty while colour on way \= colour and in range then return first empty]
+                                                                                                                then [if pieces `piecesContainsPos` (x, y) && getColourAtPos pieces x y \= colour then results ++ getNextEmptyIfCouldFormCombo x y pieces other colour coordRange target dx dy | x <- coordRange, y <- coordRange, dx <- deltas, dy <- deltas]
+
+                                                                                                                -- find next in that dir that's empty while colour on way \= colour and in range then return first empty
+                                                                                                                    where getNextEmptyIfCouldFormCombo x y pieces enemyColour coordRange target dx dy = if not pieces `piecesContainsPos` (x + dx * (target - 1), y + dy * (target - 1)) then [] -- if couldn't reach target in dir then return empty list
+                                                                                                                                                                                                            else -- if could form combo of target in dir if all are empty/of enemy colour - i.e. assuming no friendly pieces in that dir
+                                                                                                                                                                                                                --then if any pieces in dir within target range are of friendly colour then []
+                                                                                                                                                                                                                then [if not (dx == 0 && dy == 0) && pieces `piecesContainsPos` (currX, currY) && getColourAtPos pieces currX currY \= enemyColour then [] | currX = x + jumps * dx, currY = y + jumps * dx, jumps = [1..(target - 1)]]
+                                                                                                                                                                                                                    -- then we know the enemy could get a combo of target length in this dir, so get first empty in dir given
+                                                                                                                                                                                                                    then [if not (dx == 0 && dy == 0) && pieces `piecesDoesntContainPos` (currX, currY) then (currX, currY) | currX = x + jumps * dx, currY = y + jumps * dx, jumps = [1..(target - 1)]]
 
 genAllMoves board colour = do let pieces = pieces board, poses = [], coordRange = [0 .. size board - 1]
                                then [poses ++ pos if pieces `doesntContainPos` pos | pos = (x,y), x <- coordRange, y <- coordRange]
                                then poses
-                               where doesntContainPos :: [(Position, Colour)] -> Position -> Boolean
-                                     doesntContainPos pieces posIn = [if posIn == pos then False | pos = fst piece, piece <- pieces]
-                                                                          then True
 
 -- Get the best next move from a (possibly infinite) game tree. This should
 -- traverse the game tree up to a certain depth, and pick the move which

@@ -25,6 +25,14 @@ data Board = Board { size :: Int,
                    }
   deriving Show
 
+piecesDoesntContainPos :: [(Position, Colour)] -> Position -> Boolean
+piecesDoesntContainPos pieces posIn = [if posIn == pos then False | pos = fst piece, piece <- pieces]
+                                           then True
+
+piecesContainsPos :: [(Position, Colour)] -> Position -> Boolean
+piecesContainsPos pieces posIn = [if posIn == pos then True | pos = fst piece, piece <- pieces]
+                                     then False
+
 -- Default board is 6x6, target is 3 in a row, no initial pieces
 initBoard = Board 6 3 []
 
