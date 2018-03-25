@@ -43,14 +43,28 @@ gen :: Board -> Colour -> [Position]
 -- Rather than generating every possible move (which would result in an
 -- unmanageably large game tree!) it could, for example, generate moves
 -- according to various simpler strategies.
-gen board turnColour = undefined -- TODO: implement this method
+gen board turnColour = do let genMoveStrategyMethods = [blockEnemyCombosMoves, addToFriendlyCombosMoves, blockPotentialEnemyCombosMoves, formnewFriendlyCombosMoves, setupPotentialFriendlyCombosMoves, allMoves]
+                           then [if poses /= null then poses | poses = method board turnColour, method <- genMoveStrategyMethods]
+                           then error "Couldn't generate a list of Positions as potential moves in gen() in MinimaxAI.hs, even with fallback to generate all possible moves."
+
+
+blockEnemyCombosMoves :: Board -> Colour -> [Position]
+addToFriendlyCombosMoves :: Board -> Colour -> [Position]
+blockPotentialEnemyCombosMoves :: Board -> Colour -> [Position]
+formnewFriendlyCombosMoves :: Board -> Colour -> [Position]
+setupPotentialFriendlyCombosMoves :: Board -> Colour -> [Position]
+allMoves :: Board -> Colour -> [Position]
+--TODO: implement the above methods.
+
 {- STRATEGY/PRIORITY ORDER:
-1. block any piece combos (>= 2) for opposition player
-2. add to any existing friendly combos (choosing currently largest in length) where there is space to reach target length
-3. add to be 2nd item in new combo w/ another friendly piece, w/ space to reach target in at least 1 of the 2 (opposite linear) directions - preferably 2
-4. place piece in space where combo w/ target length can be reached in as many diff directions (of NW, N, NE...) as possible
-5. place piece in random place next to enemy piece, preferably in a direction which could otherwise have enemy combo to reach target length
-6. choose a random place to put piece
+1. blockEnemyCombosMoves              :   places to block any piece combos (of length >= 2) for opposition player
+2. addToFriendlyCombosMoves           :   places to add to any existing friendly combos in dir where there is space to reach target length
+3. blockPotentialEnemyCombosMoves     :   places to put piece in place next to individual enemy piece in a direction which could otherwise have enemy combo to reach target length
+4. formnewFriendlyCombosMoves         :   places to add to be 2nd item in new combo w/ another friendly piece, w/ space to reach target in at least 1 of the 2 (opposite linear) directions (from new piece to one already there and vice versa)
+5. setupPotentialFriendlyCombosMoves  :   places to put piece in empty space where combo w/ target length can be reached in as many diff directions (of NW, N, NE...) as possible. Piece to be 1st in combo - none already there.
+6. allMoves                           :   get all possible moves
+
+make list of Positions representing moves to assess for evaluation scores, constructed according to the above order
 -}
 
 -- Get the best next move from a (possibly infinite) game tree. This should
