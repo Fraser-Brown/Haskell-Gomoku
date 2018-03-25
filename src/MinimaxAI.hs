@@ -44,6 +44,14 @@ gen :: Board -> Colour -> [Position]
 -- unmanageably large game tree!) it could, for example, generate moves
 -- according to various simpler strategies.
 gen board turnColour = undefined -- TODO: implement this method
+{- STRATEGY/PRIORITY ORDER:
+1. block any piece combos (>= 2) for opposition player
+2. add to any existing friendly combos (choosing currently largest in length) where there is space to reach target length
+3. add to be 2nd item in new combo w/ another friendly piece, w/ space to reach target in at least 1 of the 2 (opposite linear) directions - preferably 2
+4. place piece in space where combo w/ target length can be reached in as many diff directions (of NW, N, NE...) as possible
+5. place piece in random place next to enemy piece, preferably in a direction which could otherwise have enemy combo to reach target length
+6. choose a random place to put piece
+-}
 
 -- Get the best next move from a (possibly infinite) game tree. This should
 -- traverse the game tree up to a certain depth, and pick the move which
@@ -58,7 +66,7 @@ getBestMove depthLimit tree = do let poses = [fst move | move <- next_moves tree
   
 getMaxEvalScore :: Int -> GameTree -> Position -> Colour -> Int
 getMaxEvalScore depthLimit tree currentDepth colour = if currentDepth >= depthLimit then return evaluate game_board tree colour
-                                                       else then max [getMaxEvalScore depthLimit currTree currentDepth + 1 colour | currTree = snd move, move <- next_moves tree]
+                                                         else then max [getMaxEvalScore depthLimit currTree currentDepth + 1 colour | currTree = snd move, move <- next_moves tree]
 
 
 -- Update the world state after some time has passed
