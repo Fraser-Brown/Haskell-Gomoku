@@ -43,7 +43,7 @@ gen :: Board -> Colour -> [Position]
 -- Rather than generating every possible move (which would result in an
 -- unmanageably large game tree!) it could, for example, generate moves
 -- according to various simpler strategies.
-gen board turnColour = undefined -- TODO: make this method
+gen board turnColour = undefined -- TODO: implement this method
 
 -- Get the best next move from a (possibly infinite) game tree. This should
 -- traverse the game tree up to a certain depth, and pick the move which
