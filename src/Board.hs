@@ -95,8 +95,21 @@ For every position ((x, y), Colour) in the 'pieces' list:
 -}
 
 -- An evaluation function for a minimax search.
--- Given a board, the target length and colour of player to score for
+-- Given a board and colour of player to score for
 -- return an integer indicating how good the board is for that colour.
-evaluate :: Board -> Colour -> Int -> Int
-evaluate board clr target = evaluateBoard board clr
--- just passes to method in MinimaxAI.hs, where I think function is more logical to be defined
+evaluate :: Board -> Colour -> Int
+evaluate board colour = do let score = 0
+                                        then [score += (2 ** (len - 1)) * noOfCombosOfLength len board colour | len <- [2..5]]
+                                        then score
+
+noOfCombosOfLength :: Int -> Board -> Colour -> Int
+-- gets the number of combinations of <length> pieces in a row for/of a given Colour
+-- find pieces with no others in combo in a downward/left direction and of the given colour
+-- for each count the no of peices of same colour in an upward/right direction and return
+noOfCombosOfLength length board colour = do let combos = 0, dirs = [0, 1]
+                                            then [if snd piece == colour && matches piece dx dy pieces board length then combos++ | piece <- pieces board, dx <- dirs, dy <- dirs]
+                                            then combos
+                                              where matches :: (Position, Colour) -> Int -> Int -> [(Position, Colour)] -> Int -> Bool
+                                                    matches piece dx dy pieces length = do let x = fst fst piece, y = snd fst piece, clr = snd piece
+                                                                                            then [if getColourAtPos pieces (x + dx * jumps) (y + dy * jumps) \= clr then False | jumps <- [1..length - 1]]
+                                                                                            then True -- fallback

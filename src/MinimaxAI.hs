@@ -52,9 +52,13 @@ gen board turnColour = undefined -- TODO: make this method
 getBestMove :: Int -- ^ Maximum search depth
                -> GameTree -- ^ Initial game tree
                -> Position
-getBestMove depthLimit tree currentDepth = if currentDepth >= depthLimit then return Position of move with best evaulateBoard score --TODO: convert this from pseudocode
-                                              else then return max of getBestMove of each move in next_moves
-
+getBestMove depthLimit tree = do let poses = [fst move | move <- next_moves tree], scores = [getMaxEvalScore depthLimit (snd move) 1 game_turn tree | move <- next_moves tree]
+                                  then poses !! elemIndex (max scores) scores
+  
+  
+getMaxEvalScore :: Int -> GameTree -> Position -> Colour -> Int
+getMaxEvalScore depthLimit tree currentDepth colour = if currentDepth >= depthLimit then return evaluate game_board tree colour
+                                                       else then max [getMaxEvalScore depthLimit currTree currentDepth + 1 colour | currTree = snd move, move <- next_moves tree]
 
 
 -- Update the world state after some time has passed
@@ -80,25 +84,3 @@ updateWorld t w = addMoveToWorld w movePos turn, movePos = getBestMove (buildTre
  In a complete implementation, 'updateWorld' should also check if either
  player has won and display a message if so.
 -}
-
-
-
--- An evaluation function for a minimax search.
--- Given a board, the target length and colour of player to score for
--- return an integer indicating how good the board is for that colour.
-evaluateBoard :: Board -> Colour -> Int -> Int
-evaluateBoard board colour target = do let score = 0
-                                        then [score += (2 ** (len - 1)) * noOfCombosOfLength len board colour | len <- [2..target - 1]]
-                                        then score
-
-noOfCombosOfLength :: Int -> Board -> Colour -> Int
--- gets the number of combinations of <length> pieces in a row for/of a given Colour
--- find pieces with no others in combo in a downward/left direction and of the given colour
--- for each count the no of peices of same colour in an upward/right direction and return
-noOfCombosOfLength length board colour = do let combos = 0, dirs = [0, 1]
-                                            then [if snd piece == colour && matches piece dx dy pieces board length then combos++ | piece <- pieces board, dx <- dirs, dy <- dirs]
-                                            then combos
-                                              where matches :: (Position, Colour) -> Int -> Int -> [(Position, Colour)] -> Int -> Bool
-                                                    matches piece dx dy pieces length = do let x = fst fst piece, y = snd fst piece, clr = snd piece
-                                                                                            then [if getColourAtPos pieces (x + dx * jumps) (y + dy * jumps) \= clr then False | jumps <- [1..length - 1]]
-                                                                                            then True -- fallback
