@@ -57,7 +57,7 @@ makeMove :: Board -> Colour -> Position -> Maybe Board
 -- given the board to change, and colour and position to put a piece at, put that colour at that pos and return or throw erorr with Nothing if invalid
 makeMove board colour pos = if 0 <= fst pos < size board && 0 <= snd pos < size board -- if a valid input
                                 then do pieces board ++ (pos, colour) -- add new piece to board
-                                        board -- return the board
+                                        then board -- return the board
                                 else Nothing -- indicating an error
 
 -- Check whether the board is in a winning state for either player.
