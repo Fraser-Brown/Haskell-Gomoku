@@ -87,8 +87,7 @@ getListOfEmptyPosesOnPieces size pieces = do let poses = [], coordRange = [0..si
                                               then [if pieces `piecesDoesntContainPos` (x,y) then poses ++ (x,y) | x <- coordRange, y <- coordRange]
                                                   then poses
 
-
-
+applyFuncInEachDirFromPos board pos func resultPoses = [if (not (dx == 0 && dy == 0)) then func board pos dx dy resultPoses | dx <- [-1..1], dy <- [-1..1]]
 
 
 
@@ -98,26 +97,30 @@ getListOfEmptyPosesOnPieces size pieces = do let poses = [], coordRange = [0..si
 --      for each enemy piece, in each dir from it:
 --            check if the first piece from it is also enemy
 --                  if so then return position of next empty position in that direction
-genBlockEnemyCombosMoves board colour = undefined
+genBlockEnemyCombosMoves board colour = do let enemyPieces = getListOfPosesOfColourOnPieces pieces board other colour, poses = []
+                                            then [applyFuncInEachDirFromPos board enemyPos checkEnemyComboMove poses | enemyPos <- enemyPieces]
+                                            then poses
+                                            where checkEnemyComboMove boardIn pos dx dy resultPoses = if getColourAtPos pieces boardIn fst pos + dx snd pos + dy \= other colour then [] -- if first piece in dir is friendly or empty then fail
+                                                                                                      else then resultPoses ++ getFirstEmptyInDirFromPos pieces boardIn pos dx dy target boardIn - 1
 
 -- get list of all positions of friendly pieces on the board
 --      for each piece, in each direction from it:
 --            check there is space to reach combo of target length
 --                  if so then return position of next empty position in that direction
-genAddToFriendlyCombosMoves board colour = undefined
+genAddToFriendlyCombosMoves board colour = do let friendlyPieces = getListOfPosesOfColourOnPieces pieces board colour, poses = []
 
 -- get list of all enemy pieces on the board
 --      for each enemy piece, in each direction from it:
 --              check there's space to reach combo of target length
 --                    if so return first empty position in that dir (will be 1st from enemy piece)
-genBlockPotentialEnemyCombosMoves board colour = undefined
+genBlockPotentialEnemyCombosMoves board colour = do let enemyPieces = getListOfPosesOfColourOnPieces pieces board other colour, poses = []
 
 -- get list of all friendly pieces on the board
 --      for each friendly piece, in each dir from it:
 --          check pos at first step from it is empty
 --          check there's space in dir or reverse to form combo of target length
 --                if both pass return pos of first step from start
-genFormNewFriendlyCombosMoves board colour = undefined
+genFormNewFriendlyCombosMoves board colour = do let friendlyPieces = getListOfPosesOfColourOnPieces pieces board colour, poses = []
 
 -- find list of empty pieces
 --      for each friendly piece, in each dir from it:
@@ -127,7 +130,9 @@ genFormNewFriendlyCombosMoves board colour = undefined
 
 -- sort empty pieces by score sorted by no of dirs to individually form combos, then pairs of dirs in conjunction to form combos
 -- return list of positions by the above sorting
-genSetupPotentialFriendlyCombosMoves board colour = undefined
+genSetupPotentialFriendlyCombosMoves board colour = do let emptyPieces = getListOfEmptyPosesOnPieces size board pieces board, poses = []
+
+
 
 genAllMoves board colour = do let pieces = pieces board, poses = [], coordRange = [0 .. size board - 1]
                                then [poses ++ pos if pieces `doesntContainPos` pos | pos = (x,y), x <- coordRange, y <- coordRange]
