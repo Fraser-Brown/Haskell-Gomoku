@@ -89,6 +89,9 @@ getListOfEmptyPosesOnPieces size pieces = do let poses = [], coordRange = [0..si
 
 applyFuncInEachDirFromPos board pos func resultPoses = [if (not (dx == 0 && dy == 0)) then func board pos dx dy resultPoses | dx <- [-1..1], dy <- [-1..1]]
 
+checkComboPossible pieces colour pos dx dy jumpLimit = [if pieces `getColourAtPos` x y == other colour then False | x = fst pos + dx * jumps, y = snd pos + dy * jumps, jumps <- [1..jumpLimit]]
+                                                          then True
+
 
 
 
@@ -100,20 +103,29 @@ applyFuncInEachDirFromPos board pos func resultPoses = [if (not (dx == 0 && dy =
 genBlockEnemyCombosMoves board colour = do let enemyPieces = getListOfPosesOfColourOnPieces pieces board other colour, poses = []
                                             then [applyFuncInEachDirFromPos board enemyPos checkEnemyComboMove poses | enemyPos <- enemyPieces]
                                             then poses
-                                            where checkEnemyComboMove boardIn pos dx dy resultPoses = if getColourAtPos pieces boardIn fst pos + dx snd pos + dy \= other colour then [] -- if first piece in dir is friendly or empty then fail
-                                                                                                      else then resultPoses ++ getFirstEmptyInDirFromPos pieces boardIn pos dx dy target boardIn - 1
+                                            where checkEnemyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColourAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
+                                                                                                      else if getColourAtPos pieces boardIn fst pos + dx snd pos + dy \= other colour then [] -- if first piece in dir is friendly or empty then fail
+                                                                                                           else then resultPoses ++ getFirstEmptyInDirFromPos pieces boardIn pos dx dy (target boardIn - 1)
 
 -- get list of all positions of friendly pieces on the board
 --      for each piece, in each direction from it:
 --            check there is space to reach combo of target length
 --                  if so then return position of next empty position in that direction
 genAddToFriendlyCombosMoves board colour = do let friendlyPieces = getListOfPosesOfColourOnPieces pieces board colour, poses = []
+                                              then [applyFuncInEachDirFromPos board friendlyPos checkFriendlyComboMove poses | friendlyPos <- friendlyPieces]
+                                              then poses
+                                              where checkFriendlyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColourAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
+                                                                                                           else then resultPoses ++ getFirstEmptyInDirFromPos pieces boardIn pos dx dy (target boardIn - 1)
 
 -- get list of all enemy pieces on the board
 --      for each enemy piece, in each direction from it:
 --              check there's space to reach combo of target length
 --                    if so return first empty position in that dir (will be 1st from enemy piece)
 genBlockPotentialEnemyCombosMoves board colour = do let enemyPieces = getListOfPosesOfColourOnPieces pieces board other colour, poses = []
+                                                    then [applyFuncInEachDirFromPos board enemyPos checkEnemyComboMove poses | enemyPos <- enemyPieces]
+                                                    then poses
+                                                    where checkEnemyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColourAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
+                                                                                                              else then resultPoses ++ getFirstEmptyInDirFromPos pieces boardIn pos dx dy (target boardIn - 1)
 
 -- get list of all friendly pieces on the board
 --      for each friendly piece, in each dir from it:
