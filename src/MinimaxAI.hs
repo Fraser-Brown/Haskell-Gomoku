@@ -133,9 +133,14 @@ genBlockPotentialEnemyCombosMoves board colour = do let enemyPieces = getListOfP
 --          check there's space in dir or reverse to form combo of target length
 --                if both pass return pos of first step from start
 genFormNewFriendlyCombosMoves board colour = do let friendlyPieces = getListOfPosesOfColourOnPieces pieces board colour, poses = []
+                                                then [applyFuncInEachDirFromPos board friendlyPos checkFormNewFriendlyCombosMove poses | friendlyPos <- friendlyPieces]
+                                                then poses
+                                                where checkFormNewFriendlyCombosMove boardIn pos dx dy resultPoses = if pieces `piecesContainsPos` fst pos + dx snd pos + dy then Nothing
+                                                                                                                     else then if not checkComboPossible pieces boardIn (pieces `getColourAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
+                                                                                                                               else then resultPoses ++ (fst pos + dx, snd pos + dy)
 
 -- find list of empty pieces
---      for each friendly piece, in each dir from it:
+--      for each empty piece, in each dir from it:
 --            check how many empty/friendly pieces there are for steps up to target no away
 --                  find how many dirs could become a friendly combo
 --                  find how many opposite dirs, if they couldn't both combine to a new combo if they could combine to combo of target length (target / 2 each)
