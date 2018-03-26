@@ -1,4 +1,5 @@
 -- module for the minimax AI adapted from intial code
+-- TODO: refine, test and debug the methods below
 
 module MinimaxAI where
 
@@ -47,18 +48,12 @@ gen board turnColour = do let genMoveStrategyMethods = [blockEnemyCombosMoves, a
                            then [if poses /= null then poses | poses = method board turnColour, method <- genMoveStrategyMethods]
                            then error "Couldn't generate a list of Positions as potential moves in gen() in MinimaxAI.hs, even with fallback to generate all possible moves."
 
--- data Board = Board { size :: Int,
---                      target :: Int,
---                      pieces :: [(Position, Colour)]
---                    }
-
 genBlockEnemyCombosMoves :: Board -> Colour -> [Position]
 genAddToFriendlyCombosMoves :: Board -> Colour -> [Position]
 genBlockPotentialEnemyCombosMoves :: Board -> Colour -> [Position]
 genFormNewFriendlyCombosMoves :: Board -> Colour -> [Position]
 genSetupPotentialFriendlyCombosMoves :: Board -> Colour -> [Position]
 genAllMoves :: Board -> Colour -> [Position]
---TODO: implement the above methods.
 
 {- STRATEGY/PRIORITY ORDER:
 1. genBlockEnemyCombosMoves             ⨯  :   places to block any piece combos (of length >= 2) for opposition player
@@ -143,12 +138,24 @@ genFormNewFriendlyCombosMoves board colour = do let friendlyPieces = getListOfPo
 --      for each empty piece, in each dir from it:
 --            check how many empty/friendly pieces there are for steps up to target no away
 --                  find how many dirs could become a friendly combo
---                  find how many opposite dirs, if they couldn't both combine to a new combo if they could combine to combo of target length (target / 2 each)
-
--- sort empty pieces by score sorted by no of dirs to individually form combos, then pairs of dirs in conjunction to form combos
--- return list of positions by the above sorting
+--                  if none, find how many opposite dirs could combine to combo of target length (target / 2 each)
+--                  if either above pass and pos being checked not already in list of moves, add to it
 genSetupPotentialFriendlyCombosMoves board colour = do let emptyPieces = getListOfEmptyPosesOnPieces size board pieces board, poses = []
-
+                                                    then [applyFuncInEachDirFromPos board emptyPos checkSetupPotentialFriendlyCombo poses | emptyPos <- emptyPieces]
+                                                    then poses
+                                      
+checkSetupPotentialFriendlyCombo :: Board -> Position -> Int -> Int -> [Position] -> Void
+--check how many empty/friendly pieces there are for steps up to target no away
+--      find how many dirs could become a friendly combo
+--      if none, find how many opposite dirs could combine to combo of target length (target / 2 each)
+--      if either above pass and pos being checked not already in list of moves, add to it
+checkSetupPotentialFriendlyCombo board pos dx dy resultPoses = do let pieces = pieces board, colour = (pieces `getColourAtPos` fst pos snd pos), target = target board
+                                                                  then if checkComboPossible pieces board colour pos dx dy (target boardIn - 1) && not (elem pos resultPoses) then resultPoses ++ pos
+                                                                  else -- not possible to form combo in dir given, so try to find if possible in conjunction w/ opposite direction
+                                                                      then do let limitForward = 0, limitBack = 0
+                                                                      then do [if checkComboPossible pieces colour pos dx dy jumps then limitForward = jumps | jumps <- [1..target - 1]]
+                                                                      then do [if checkComboPossible pieces colour pos negate dx negate dy jumps then limitBack = jumps | jumps <- [1..target - 1]]
+                                                                      then if limitForward + limitBack + 1 >= target then resultPoses ++ pos
 
 
 genAllMoves board colour = do let pieces = pieces board, poses = [], coordRange = [0 .. size board - 1]

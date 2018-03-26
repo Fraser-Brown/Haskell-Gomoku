@@ -1,4 +1,5 @@
 -- module to model the board of the game and other elements of the game state
+-- TODO: refine, test and debug the methods below
 
 module Board where
 
@@ -47,8 +48,6 @@ data World = World { board :: Board,
                      turn :: Colour }
 
 initWorld = World initBoard Black -- function starting the game world with the default initial board, with it being Black's go to start
-
---TODO: refine, test and debug the methods below
 
 -- Play a move on the board; return 'Nothing' if the move is invalid
 -- (e.g. outside the range of the board, or there is a piece already there)
