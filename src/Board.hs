@@ -26,13 +26,11 @@ data Board = Board { size :: Int,
                    }
   deriving Show
 
-piecesDoesntContainPos :: [(Position, Colour)] -> Position -> Boolean
-piecesDoesntContainPos pieces posIn = [if posIn == pos then False | pos = fst piece, piece <- pieces]
-                                           then True
+--piecesDoesntContainPos :: [(Position, Colour)] -> Position -> Boolean
+--piecesDoesntContainPos pieces posIn = posIn `elem` (map fst pieces)
 
 piecesContainsPos :: [(Position, Colour)] -> Position -> Boolean
-piecesContainsPos pieces posIn = [if posIn == pos then True | pos = fst piece, piece <- pieces]
-                                     then False
+piecesContainsPos pieces posIn = posIn `elem` (map fst pieces)
 
 -- Default board is 6x6, target is 3 in a row, no initial pieces
 initBoard = Board 6 3 []
@@ -55,9 +53,9 @@ makeMove :: Board -> Colour -> Position -> Maybe Board
 
 -- given the board to change, and colour and position to put a piece at, put that colour at that pos and return or throw erorr with Nothing if invalid
 makeMove board colour pos = if 0 <= fst pos < size board && 0 <= snd pos < size board -- if a valid input
-                                then do pieces board ++ (pos, colour) -- add new piece to board
-                                        then board -- return the board
+                                then Board (size board) (target board) (pieces board ++ (pos, colour))
                                 else Nothing -- indicating an error
+
 
 -- Check whether the board is in a winning state for either player.
 -- Returns 'Nothing' if neither player has won yet
