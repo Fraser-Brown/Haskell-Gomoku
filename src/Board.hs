@@ -26,10 +26,12 @@ data Board = Board { size :: Int,
                    }
   deriving Show
 
---piecesDoesntContainPos :: [(Position, Colour)] -> Position -> Boolean
---piecesDoesntContainPos pieces posIn = posIn `elem` (map fst pieces)
+piecesDoesntContainPos :: [(Position, Colour)] -> Position -> Boolean
+-- returns if the list of pieces pieces doesn't contain the position given
+piecesDoesntContainPos pieces posIn = not piecesContainsPos pieces posIn
 
 piecesContainsPos :: [(Position, Colour)] -> Position -> Boolean
+-- returns if the list of pieces pieces contains the position given
 piecesContainsPos pieces posIn = posIn `elem` (map fst pieces)
 
 -- Default board is 6x6, target is 3 in a row, no initial pieces
