@@ -127,8 +127,7 @@ returnColourOfPiece position pieces = if piecesContainsPos pieces position == Tr
                          else Nothing
 
 
-
-
+-- The evaluate part is not working yet
 
 {- Hint: One way to implement 'checkWon' would be to write functions
 which specifically check for lines in all 8 possible directions
