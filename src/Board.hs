@@ -26,11 +26,11 @@ data Board = Board { size :: Int,
                    }
   deriving Show
 
-piecesDoesntContainPos :: [(Position, Colour)] -> Position -> Boolean
--- returns if the list of pieces pieces doesn't contain the position given
-piecesDoesntContainPos pieces posIn = not piecesContainsPos pieces posIn
+--piecesDoesntContainPos :: [(Position, Colour)] -> Position -> Bool
+---- returns if the list of pieces pieces doesn't contain the position given
+--piecesDoesntContainPos pieces posIn = not piecesContainsPos pieces posIn
 
-piecesContainsPos :: [(Position, Colour)] -> Position -> Boolean
+piecesContainsPos :: [(Position, Colour)] -> Position -> Bool
 -- returns if the list of pieces pieces contains the position given
 piecesContainsPos pieces posIn = posIn `elem` (map fst pieces)
 
@@ -54,40 +54,81 @@ initWorld = World initBoard Black -- function starting the game world with the d
 makeMove :: Board -> Colour -> Position -> Maybe Board
 
 -- given the board to change, and colour and position to put a piece at, put that colour at that pos and return or throw erorr with Nothing if invalid
-makeMove board colour pos = if 0 <= fst pos < size board && 0 <= snd pos < size board -- if a valid input
-                                then Board (size board) (target board) (pieces board ++ (pos, colour))
-                                else Nothing -- indicating an error
+makeMove board colour pos = if 0 <= fst pos && fst pos < size board && 0 <= snd pos && snd pos < size board -- if a valid input
+                                then Just (Board (size board) (target board) (pieces board ++ [(pos, colour)]))
+                                else Nothing
+--
+--
+---- Check whether the board is in a winning state for either player.
+---- Returns 'Nothing' if neither player has won yet
+---- Returns 'Just c' if the player 'c' has won
+----checkWon :: Board -> Maybe Colour
+--{- for every piece, try going all directions
+--    if any have matching colour, keep going in them until target in a row are found -> return that colour or they're empty / diff colour -> next piece
+---}
+----checkWon board = [if res /= Nothing then res | (pos,clr) <- pieces board, res = checkPiece (pos,clr) board]
+----                    then Nothing -- fallback
+----                    where checkPiece (pos,clr) board = do let incs = [-1...1], pieces = pieces board, target = target board, size = size board
+----                                                          then [if wonInDir \= Nothing then wonInDir | dx <- incs, dy <- incs, wonInDir = checkDir dx dy (pos,clr) pieces target size 0]
+----                                                          then Nothing -- fallback
+----
+----checkDir :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int -> Maybe Colour
+------ check if there are the no of same coloured pieces in a row in 1 direction from a given start point to win
+------ each direction is rerpresented by a dx and dy - showing how much to add/subtract at each jump
+----checkDir dx dy (pos,clr) pieces target size incsDone = if not checkCoordsMatching dx dy (pos,clr) pieces (incsDone + 1) then Nothing
+----                                                            else if incsDone == target then Just clr
+----                                                            else dx dy (pos,clr) pieces target size (incsDone + 1)
+----
+----checkCoordsMatching :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int
+------ check the pieces at 2 coords, if present, have the same colour
+------ return false if there aren't pieces at both points or if the pieces at both aren't the same colour
+----checkCoordsMatching dx dy (pos,clr) pieces jumps = if getColourAtPos pieces (fst pos + jumps * dx, snd pos + jumps * dy) == clr
+----
+----getColourAtPos :: [(Position, Colour)] -> Int -> Int -> Maybe Colour
+------ get the colour of the piece at a given position; if not one there return Nothing
+----getColourAtPos pieces x y = [if isPiece then clr | (pos, clr) <- pieces, isPiece = (fst pos == x && snd pos == y)]
+----                                then Nothing -- fallback
+--
 
+esIgual :: Eq a => a -> a -> Bool
+esIgual b c = (b == c)
 
--- Check whether the board is in a winning state for either player.
--- Returns 'Nothing' if neither player has won yet
--- Returns 'Just c' if the player 'c' has won
 checkWon :: Board -> Maybe Colour
-{- for every piece, try going all directions
-    if any have matching colour, keep going in them until target in a row are found -> return that colour or they're empty / diff colour -> next piece
--}
-checkWon board = [if res /= Nothing then res | (pos,clr) <- pieces board, res = checkPiece (pos,clr) board]
-                    then Nothing -- fallback
-                    where checkPiece (pos,clr) board = do let incs = [-1...1], pieces = pieces board, target = target board, size = size board
-                                                          then [if wonInDir \= Nothing then wonInDir | dx <- incs, dy <- incs, wonInDir = checkDir dx dy (pos,clr) pieces target size 0]
-                                                          then Nothing -- fallback
 
-checkDir :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int -> Maybe Colour
--- check if there are the no of same coloured pieces in a row in 1 direction from a given start point to win
--- each direction is rerpresented by a dx and dy - showing how much to add/subtract at each jump
-checkDir dx dy (pos,clr) pieces target size incsDone = if not checkCoordsMatching dx dy (pos,clr) pieces (incsDone + 1) then Nothing
-                                                            else if incsDone == target then Just clr
-                                                            else dx dy (pos,clr) pieces target size (incsDone + 1)
+checkWon board = checkPieces (pieces board) board
 
-checkCoordsMatching :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int
--- check the pieces at 2 coords, if present, have the same colour
--- return false if there aren't pieces at both points or if the pieces at both aren't the same colour
-checkCoordsMatching dx dy (pos,clr) pieces jumps = if getColourAtPos pieces (fst pos + jumps * dx, snd pos + jumps * dy) == clr
+checkPieces :: [(Position, Colour)] -> Board -> Maybe Colour
+checkPieces [] board = Nothing
+checkPieces (x:xs) board = case checkPiece x board of
+                                      Just Black -> Just Black
+                                      Just White -> Just White
+                                      Nothing    -> checkPieces xs board
+--
+checkPiece :: (Position, Colour) -> Board -> Maybe Colour
 
-getColourAtPos :: [(Position, Colour)] -> Int -> Int -> Maybe Colour
--- get the colour of the piece at a given position; if not one there return Nothing
-getColourAtPos pieces x y = [if isPiece then clr | (pos, clr) <- pieces, isPiece = (fst pos == x && snd pos == y)]
-                                then Nothing -- fallback
+checkPiece ((1,2),White) board = Nothing
+--
+--
+--
+checkNorth :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
+
+checkNorth piece pieces  = do
+                       let a = show (Just (snd piece))
+                       let b = show (returnColourOfPiece (fst (fst piece), snd (fst piece)+1) pieces)
+                       let c = show (returnColourOfPiece (fst (fst piece), snd (fst piece)+2) pieces)
+                       if esIgual a b && esIgual a c
+                       then (Just (snd piece))
+                       else Nothing
+
+returnColourOfPiece :: Position -> [(Position, Colour)] -> Maybe Colour
+
+returnColourOfPiece position pieces = if piecesContainsPos pieces position == True
+                         then head [Just b | (a,b) <- pieces, (a==position)]
+                         else Nothing
+
+
+
+
 
 {- Hint: One way to implement 'checkWon' would be to write functions
 which specifically check for lines in all 8 possible directions
@@ -104,19 +145,19 @@ For every position ((x, y), Colour) in the 'pieces' list:
 -- An evaluation function for a minimax search.
 -- Given a board and colour of player to score for
 -- return an integer indicating how good the board is for that colour.
-evaluate :: Board -> Colour -> Int
-evaluate board colour = do let score = 0
-                                        then [score += (2 ** (len - 1)) * noOfCombosOfLength len board colour | len <- [2..5]]
-                                        then score
-
-noOfCombosOfLength :: Int -> Board -> Colour -> Int
--- gets the number of combinations of <length> pieces in a row for/of a given Colour
--- find pieces with no others in combo in a downward/left direction and of the given colour
--- for each count the no of peices of same colour in an upward/right direction and return
-noOfCombosOfLength length board colour = do let combos = 0, dirs = [0, 1]
-                                            then [if snd piece == colour && matches piece dx dy pieces board length then combos++ | piece <- pieces board, dx <- dirs, dy <- dirs]
-                                            then combos
-                                              where matches :: (Position, Colour) -> Int -> Int -> [(Position, Colour)] -> Int -> Bool
-                                                    matches piece dx dy pieces length = do let x = fst fst piece, y = snd fst piece, clr = snd piece
-                                                                                            then [if getColourAtPos pieces (x + dx * jumps) (y + dy * jumps) \= clr then False | jumps <- [1..length - 1]]
-                                                                                            then True -- fallback
+--evaluate :: Board -> Colour -> Int
+--evaluate board colour = do let score = 0
+--                                        then [score += (2 ** (len - 1)) * noOfCombosOfLength len board colour | len <- [2..5]]
+--                                        then score
+--
+--noOfCombosOfLength :: Int -> Board -> Colour -> Int
+---- gets the number of combinations of <length> pieces in a row for/of a given Colour
+---- find pieces with no others in combo in a downward/left direction and of the given colour
+---- for each count the no of peices of same colour in an upward/right direction and return
+--noOfCombosOfLength length board colour = do let combos = 0, dirs = [0, 1]
+--                                            then [if snd piece == colour && matches piece dx dy pieces board length then combos++ | piece <- pieces board, dx <- dirs, dy <- dirs]
+--                                            then combos
+--                                              where matches :: (Position, Colour) -> Int -> Int -> [(Position, Colour)] -> Int -> Bool
+--                                                    matches piece dx dy pieces length = do let x = fst fst piece, y = snd fst piece, clr = snd piece
+--                                                                                            then [if getColourAtPos pieces (x + dx * jumps) (y + dy * jumps) \= clr then False | jumps <- [1..length - 1]]
+--                                                                                            then True -- fallback
