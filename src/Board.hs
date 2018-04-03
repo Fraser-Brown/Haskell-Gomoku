@@ -67,10 +67,10 @@ makeMove board colour pos = if 0 <= fst pos && fst pos < size board && 0 <= snd 
 --    if any have matching colour, keep going in them until target in a row are found -> return that colour or they're empty / diff colour -> next piece
 ---}
 ----checkWon board = [if res /= Nothing then res | (pos,clr) <- pieces board, res = checkPiece (pos,clr) board]
-----                    then Nothing -- fallback
+----                    Nothing -- fallback
 ----                    where checkPiece (pos,clr) board = do let incs = [-1...1], pieces = pieces board, target = target board, size = size board
-----                                                          then [if wonInDir \= Nothing then wonInDir | dx <- incs, dy <- incs, wonInDir = checkDir dx dy (pos,clr) pieces target size 0]
-----                                                          then Nothing -- fallback
+----                                                          [if wonInDir \= Nothing then wonInDir | dx <- incs, dy <- incs, wonInDir = checkDir dx dy (pos,clr) pieces target size 0]
+----                                                          Nothing -- fallback
 ----
 ----checkDir :: Int -> Int -> (Position, Colour) -> [(Position, Colour)] -> Int -> Int -> Maybe Colour
 ------ check if there are the no of same coloured pieces in a row in 1 direction from a given start point to win
@@ -87,7 +87,7 @@ makeMove board colour pos = if 0 <= fst pos && fst pos < size board && 0 <= snd 
 ----getColourAtPos :: [(Position, Colour)] -> Int -> Int -> Maybe Colour
 ------ get the colour of the piece at a given position; if not one there return Nothing
 ----getColourAtPos pieces x y = [if isPiece then clr | (pos, clr) <- pieces, isPiece = (fst pos == x && snd pos == y)]
-----                                then Nothing -- fallback
+----                                Nothing -- fallback
 --
 
 esIgual :: Eq a => a -> a -> Bool
@@ -222,6 +222,9 @@ returnColourOfPiece position pieces = if piecesContainsPos pieces position == Tr
 
 
 -- The evaluate part is not working yet
+
+-- evaluate generates a score of how well the game is going for a given player
+-- e.g. given a board and colour, the function returns a number representing how well the game is going for them
 
 {- Hint: One way to implement 'checkWon' would be to write functions
 which specifically check for lines in all 8 possible directions
