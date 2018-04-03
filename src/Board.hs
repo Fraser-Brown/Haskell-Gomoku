@@ -106,8 +106,32 @@ checkPieces (x:xs) board = case checkPiece x board of
 --
 checkPiece :: (Position, Colour) -> Board -> Maybe Colour
 
-checkPiece ((1,2),White) board = Nothing
---
+checkPiece piece board = do
+                      let n = checkNorth piece (pieces board)
+                      let ne = checkNorthEast piece (pieces board)
+                      let e = checkEast piece (pieces board)
+                      let se = checkSouthEast piece (pieces board)
+                      let s = checkSouth piece (pieces board)
+                      let sw = checkSouthWest piece (pieces board)
+                      let w = checkWest piece (pieces board)
+                      let nw = checkNorthWest piece (pieces board)
+                      if not (esIgual (show n) "Nothing")
+                         then n
+                      else if not (esIgual (show ne) "Nothing")
+                         then ne
+                      else if not (esIgual (show e) "Nothing")
+                         then e
+                      else if not (esIgual (show se) "Nothing")
+                         then se
+                      else if not (esIgual (show s) "Nothing")
+                         then s
+                      else if not (esIgual (show sw) "Nothing")
+                         then sw
+                      else if not (esIgual (show w) "Nothing")
+                         then w
+                      else if not (esIgual (show nw) "Nothing")
+                         then nw
+                      else Nothing
 --
 --
 checkNorth :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
@@ -116,6 +140,76 @@ checkNorth piece pieces  = do
                        let a = show (Just (snd piece))
                        let b = show (returnColourOfPiece (fst (fst piece), snd (fst piece)+1) pieces)
                        let c = show (returnColourOfPiece (fst (fst piece), snd (fst piece)+2) pieces)
+                       if esIgual a b && esIgual a c
+                       then (Just (snd piece))
+                       else Nothing
+
+checkNorthEast :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
+
+checkNorthEast piece pieces  = do
+                       let a = show (Just (snd piece))
+                       let b = show (returnColourOfPiece (fst (fst piece)+1, snd (fst piece)+1) pieces)
+                       let c = show (returnColourOfPiece (fst (fst piece)+2, snd (fst piece)+2) pieces)
+                       if esIgual a b && esIgual a c
+                       then (Just (snd piece))
+                       else Nothing
+
+checkEast :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
+
+checkEast piece pieces  = do
+                       let a = show (Just (snd piece))
+                       let b = show (returnColourOfPiece (fst (fst piece)+1, snd (fst piece)) pieces)
+                       let c = show (returnColourOfPiece (fst (fst piece)+2, snd (fst piece)) pieces)
+                       if esIgual a b && esIgual a c
+                       then (Just (snd piece))
+                       else Nothing
+
+checkSouthEast :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
+
+checkSouthEast piece pieces  = do
+                       let a = show (Just (snd piece))
+                       let b = show (returnColourOfPiece (fst (fst piece)+1, snd (fst piece)-1) pieces)
+                       let c = show (returnColourOfPiece (fst (fst piece)+2, snd (fst piece)-2) pieces)
+                       if esIgual a b && esIgual a c
+                       then (Just (snd piece))
+                       else Nothing
+
+checkSouth :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
+
+checkSouth piece pieces  = do
+                       let a = show (Just (snd piece))
+                       let b = show (returnColourOfPiece (fst (fst piece), snd (fst piece)-1) pieces)
+                       let c = show (returnColourOfPiece (fst (fst piece), snd (fst piece)-2) pieces)
+                       if esIgual a b && esIgual a c
+                       then (Just (snd piece))
+                       else Nothing
+
+checkSouthWest :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
+
+checkSouthWest piece pieces  = do
+                       let a = show (Just (snd piece))
+                       let b = show (returnColourOfPiece (fst (fst piece)-1, snd (fst piece)-1) pieces)
+                       let c = show (returnColourOfPiece (fst (fst piece)-2, snd (fst piece)-2) pieces)
+                       if esIgual a b && esIgual a c
+                       then (Just (snd piece))
+                       else Nothing
+
+checkWest :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
+
+checkWest piece pieces  = do
+                       let a = show (Just (snd piece))
+                       let b = show (returnColourOfPiece (fst (fst piece)-1, snd (fst piece)) pieces)
+                       let c = show (returnColourOfPiece (fst (fst piece)-2, snd (fst piece)) pieces)
+                       if esIgual a b && esIgual a c
+                       then (Just (snd piece))
+                       else Nothing
+
+checkNorthWest :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
+
+checkNorthWest piece pieces  = do
+                       let a = show (Just (snd piece))
+                       let b = show (returnColourOfPiece (fst (fst piece)-1, snd (fst piece)+1) pieces)
+                       let c = show (returnColourOfPiece (fst (fst piece)-2, snd (fst piece)+2) pieces)
                        if esIgual a b && esIgual a c
                        then (Just (snd piece))
                        else Nothing
