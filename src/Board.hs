@@ -141,8 +141,8 @@ checkNorth piece pieces  = do
                        let b = show (returnColourOfPiece (fst (fst piece), snd (fst piece)+1) pieces)
                        let c = show (returnColourOfPiece (fst (fst piece), snd (fst piece)+2) pieces)
                        if esIgual a b && esIgual a c
-                       then (Just (snd piece))
-                       else Nothing
+                           then (Just (snd piece))
+                           else Nothing
 
 checkNorthEast :: (Position, Colour) ->[(Position, Colour)]-> Maybe Colour
 
@@ -217,8 +217,8 @@ checkNorthWest piece pieces  = do
 returnColourOfPiece :: Position -> [(Position, Colour)] -> Maybe Colour
 
 returnColourOfPiece position pieces = if piecesContainsPos pieces position == True
-                         then head [Just b | (a,b) <- pieces, (a==position)]
-                         else Nothing
+                                          then head [Just b | (a,b) <- pieces, (a==position)]
+                                          else Nothing
 
 
 -- The evaluate part is not working yet
@@ -240,17 +240,17 @@ For every position ((x, y), Colour) in the 'pieces' list:
 -- return an integer indicating how good the board is for that colour.
 --evaluate :: Board -> Colour -> Int
 --evaluate board colour = do let score = 0
---                                        then [score += (2 ** (len - 1)) * noOfCombosOfLength len board colour | len <- [2..5]]
---                                        then score
+--                                           [score += (2 ** (len - 1)) * noOfCombosOfLength len board colour | len <- [2..5]]
+--                                           score
 --
 --noOfCombosOfLength :: Int -> Board -> Colour -> Int
 ---- gets the number of combinations of <length> pieces in a row for/of a given Colour
 ---- find pieces with no others in combo in a downward/left direction and of the given colour
 ---- for each count the no of peices of same colour in an upward/right direction and return
 --noOfCombosOfLength length board colour = do let combos = 0, dirs = [0, 1]
---                                            then [if snd piece == colour && matches piece dx dy pieces board length then combos++ | piece <- pieces board, dx <- dirs, dy <- dirs]
---                                            then combos
+--                                            [if snd piece == colour && matches piece dx dy pieces board length then combos++ | piece <- pieces board, dx <- dirs, dy <- dirs]
+--                                            combos
 --                                              where matches :: (Position, Colour) -> Int -> Int -> [(Position, Colour)] -> Int -> Bool
 --                                                    matches piece dx dy pieces length = do let x = fst fst piece, y = snd fst piece, clr = snd piece
---                                                                                            then [if getColourAtPos pieces (x + dx * jumps) (y + dy * jumps) \= clr then False | jumps <- [1..length - 1]]
---                                                                                            then True -- fallback
+--                                                                                            [if getColourAtPos pieces (x + dx * jumps) (y + dy * jumps) \= clr then False | jumps <- [1..length - 1]]
+--                                                                                            True -- fallback

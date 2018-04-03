@@ -29,11 +29,11 @@ gamePicture world = Pictures [drawNextPlayer show turn board, drawTargetReminder
 
 drawNextPlayer :: String -> Picture
 -- draw text informing the user of which player (Black/White) is next
-drawNextPlayer nPlyr = $ Text nPlyr ++ " has the next move"
+drawNextPlayer nPlyr = Text $ nPlyr ++ " has the next move"
 
 drawTargetReminder :: Int -> Picture
 -- draw text informing user of the target x in a row to get
-drawTargetReminder tgt = $ Text "Target: " ++ show tgt ++ " in a row"
+drawTargetReminder tgt = Text $ "Target: " ++ show tgt ++ " in a row"
 
 drawGrid :: Int -> Picture
 -- draw the lines of the game grid, where n is the grid width and height
@@ -56,10 +56,10 @@ drawPieces :: [(Position, Colour)] -> Picture
 -- draw each piece on the board
 drawPieces pieces = Pictures [drawPiece p | p <- pieces]
                         where drawPiece p = if snd p == White then white Circle 2
-                                                else then black Circle 2
+                                                              else black Circle 2
 
 drawTitle :: Picture
 -- draw the title of the game
-drawTitle = $ Text "Gomoku"
+drawTitle = Text "Gomoku"
 
 --TODO: add Translate method to all methods drawing Picture elements, to correctly position them on the window
