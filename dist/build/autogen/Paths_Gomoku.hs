@@ -1,6 +1,9 @@
+{-# LANGUAGE CPP #-}
+{-# OPTIONS_GHC -fno-warn-missing-import-lists #-}
+{-# OPTIONS_GHC -fno-warn-implicit-prelude #-}
 module Paths_Gomoku (
     version,
-    getBinDir, getLibDir, getDataDir, getLibexecDir,
+    getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir,
     getDataFileName, getSysconfDir
   ) where
 
@@ -9,22 +12,34 @@ import Data.Version (Version(..))
 import System.Environment (getEnv)
 import Prelude
 
+#if defined(VERSION_base)
+
+#if MIN_VERSION_base(4,0,0)
 catchIO :: IO a -> (Exception.IOException -> IO a) -> IO a
+#else
+catchIO :: IO a -> (Exception.Exception -> IO a) -> IO a
+#endif
+
+#else
+catchIO :: IO a -> (Exception.IOException -> IO a) -> IO a
+#endif
 catchIO = Exception.catch
 
 version :: Version
 version = Version [0,1,0,0] []
-bindir, libdir, datadir, libexecdir, sysconfdir :: FilePath
+bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "/root/.cabal/bin"
-libdir     = "/root/.cabal/lib/x86_64-linux-ghc-7.10.3/Gomoku-0.1.0.0-3lX3fdXiBMp2AkyBj3Kqu8"
-datadir    = "/root/.cabal/share/x86_64-linux-ghc-7.10.3/Gomoku-0.1.0.0"
-libexecdir = "/root/.cabal/libexec"
-sysconfdir = "/root/.cabal/etc"
+bindir     = "/cs/home/taeh/.cabal/bin"
+libdir     = "/cs/home/taeh/.cabal/lib/x86_64-linux-ghc-8.0.2/Gomoku-0.1.0.0"
+dynlibdir  = "/cs/home/taeh/.cabal/lib/ghc-8.0.2/Gomoku-0.1.0.0"
+datadir    = "/cs/home/taeh/.cabal/share/x86_64-linux-ghc-8.0.2/Gomoku-0.1.0.0"
+libexecdir = "/cs/home/taeh/.cabal/libexec"
+sysconfdir = "/cs/home/taeh/.cabal/etc"
 
-getBinDir, getLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
+getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "Gomoku_bindir") (\_ -> return bindir)
 getLibDir = catchIO (getEnv "Gomoku_libdir") (\_ -> return libdir)
+getDynLibDir = catchIO (getEnv "Gomoku_dynlibdir") (\_ -> return dynlibdir)
 getDataDir = catchIO (getEnv "Gomoku_datadir") (\_ -> return datadir)
 getLibexecDir = catchIO (getEnv "Gomoku_libexecdir") (\_ -> return libexecdir)
 getSysconfDir = catchIO (getEnv "Gomoku_sysconfdir") (\_ -> return sysconfdir)
