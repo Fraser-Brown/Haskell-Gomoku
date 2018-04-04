@@ -6,6 +6,7 @@ import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss
 import Board
 import MinimaxAI
+import Draw
 
 import Debug.Trace
 
@@ -18,7 +19,7 @@ import Debug.Trace
 handleInput :: Event -> World -> World
 --handleInput (EventMotion (x, y)) b  = trace ("Mouse moved to: " ++ show (x,y)) b
 
-handleInput (EventKey (MouseButton LeftButton) Up m (x, y)) b = {-trace ("Left button pressed at: " ++ show (x,y))-} newWorld
+handleInput (EventKey (MouseButton LeftButton) Up m (x, y)) b = newWorld
                                                                 where pos = getPos x y
                                                                       ans = makeMove (board b) (turn b) pos 
                                                                       newWorld = if nothingChecker(ans) == False then  b
