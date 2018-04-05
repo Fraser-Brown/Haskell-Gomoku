@@ -14,7 +14,7 @@ module Board where
     
     -- A Board is a record containing the board size (a board is a square grid,
     -- n * n), the number of pieces in a row required to win, and a list 
-    -- of pairs of position and the colour at that position.  So a 10x10 board 
+    -- of pairs of position and the Col at that position.  So a 10x10 board 
     -- for a game of 5 in a row with a black piece at 5,5 and a white piece at 8,7
     -- would be represented as:
     --
@@ -62,16 +62,18 @@ module Board where
     -- Returns 'Just c' if the player 'c' has won
         
     targetInARow :: [(Position, Col)] -> Int -> Maybe Col  
-    targetInARow pieces target | tooManyCheck w target && distanceCheckAll w = Just(White)
-                               | tooManyCheck b target && distanceCheckAll b = Just(Black)
+    targetInARow pieces target | tooManyCheck w target = Just(White)
+                               | tooManyCheck b target = Just(Black)
                                | otherwise = Nothing
                                where w = (filter(\y -> snd y == White) pieces)
                                      b = (filter(\y -> snd y == Black) pieces)
 
 
     tooManyCheck:: [(Position, Col)]-> Int-> Bool
-    tooManyCheck pieces target | length pieces == target = True
-                               | otherwise = False
+    tooManyCheck pieces target | length pieces < target = False
+                               | length pieces == target = distanceCheckAll pieces
+                               | distanceCheckAll (take target pieces) =  distanceChecker (pieces !! (target -1)) (pieces !! target) == False 
+                               | otherwise = tooManyCheck (drop 1 pieces) target
                         
     distanceCheckAll::[(Position, Col)] -> Bool
     distanceCheckAll [] = False
@@ -94,16 +96,16 @@ module Board where
                    | d1 /= Nothing = d1
                    | d2 /= Nothing = d2
                    | otherwise = Nothing
-                   where  r = checkRow board 1
-                          c = checkCol board 1
-                          d1 = checkDiagonalCriss board 1
-                          d2 = checkDiagonalCross board 1
+                   where  r = checkRow board 0
+                          c = checkCol board 0
+                          d1 = checkDiagonalCriss board 0
+                          d2 = checkDiagonalCross board 0
 
     
     rowScanner ::  [(Position, Col)] -> Int  -> Maybe Col
     rowScanner pieces target | length pieces < target = Nothing
                              | otherwise = targetInARow sorted target
-                             where sorted = sortBy (compare `on` (\(a,b) -> fst a)) pieces       
+                             where sorted = sortBy (compare `on` (\(a,b) -> snd a)) pieces       
 
     checkRow :: Board -> Int -> Maybe Col
     checkRow board x | x > s = Nothing
@@ -116,7 +118,7 @@ module Board where
     colScanner ::  [(Position, Col)] -> Int  -> Maybe Col  
     colScanner pieces target | length pieces < target = Nothing
                              | otherwise = targetInARow sorted target 
-                             where sorted = sortBy (compare `on` (\(a,b) -> snd a)) pieces   
+                             where sorted = sortBy (compare `on` (\(a,b) -> fst a)) pieces   
 
     checkCol :: Board -> Int -> Maybe Col
     checkCol board x | x > s = Nothing
@@ -132,20 +134,20 @@ module Board where
                                   where sorted = sortBy (compare `on` (\(a,b) -> (fst a)) )pieces  
 
     checkDiagonalCriss :: Board -> Int -> Maybe Col --bottom left to top right /
-    checkDiagonalCriss board x | x > s = Nothing
-                          | winner /= Nothing = winner
-                          | winner == Nothing = checkDiagonalCriss board (x+1) 
-                          where p = pieces board
-                                s = size board  
-                                winner = diagonalScanner (filter( \y -> snd(fst y) + fst(fst y) == x+1) p) (target board)
+    checkDiagonalCriss board x | x > s * 2 = Nothing
+                               | winner /= Nothing = winner
+                               | winner == Nothing = checkDiagonalCriss board (x+1) 
+                               where p = pieces board
+                                     s = size board  
+                                     winner = diagonalScanner (filter( \y -> snd(fst y) + fst(fst y) == x) p) (target board)
 
     checkDiagonalCross :: Board -> Int -> Maybe Col --top left to bottom right \
-    checkDiagonalCross board x | x > s = Nothing
-                          | winner /= Nothing = winner
-                          | winner == Nothing = checkDiagonalCross board (x+1) 
-                          where p = pieces board
-                                s = size board  
-                                winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)                            
+    checkDiagonalCross board x | x > s * 2 = Nothing
+                               | winner /= Nothing = winner
+                               | winner == Nothing = checkDiagonalCross board (x+1) 
+                               where p = pieces board
+                                     s = size board  
+                                     winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)                            
    
 
     {- Hint: One way to implement 'checkWon' would be to write functions 
@@ -155,13 +157,13 @@ module Board where
     In these functions:
     To check for a line of n in a row in a direction D:
     For every position ((x, y), col) in the 'pieces' list:
-    - if n == 1, the colour 'col' has won
+    - if n == 1, the Col 'col' has won
     - if n > 1, move one step in direction D, and check for a line of
       n-1 in a row.
     -}
     
-    -- An evaluation function for a minimax search. Given a board and a colour
-    -- return an integer indicating how good the board is for that colour.
+    -- An evaluation function for a minimax search. Given a board and a Col
+    -- return an integer indicating how good the board is for that Col.
     evaluate :: Board -> Col -> Int
     evaluate = undefined
     

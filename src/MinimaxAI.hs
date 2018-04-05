@@ -6,13 +6,13 @@ module MinimaxAI where
 import Board
 
 data GameTree = GameTree { game_board :: Board,
-                           game_turn :: Colour,
+                           game_turn :: Col,
                            next_moves :: [(Position, GameTree)] }
 
 
-                           
+  {-                         
 -- Given a function to generate plausible moves (i.e. board positions)
--- for a player (represented in Colour) on a particular board, generate a (potentially)
+-- for a player (represented in Col) on a particular board, generate a (potentially)
 -- infinite game tree.
 --
 -- (It's not actually infinite since the board is finite, but it's sufficiently
@@ -22,9 +22,9 @@ data GameTree = GameTree { game_board :: Board,
 -- Rather than generating every possible move (which would result in an
 -- unmanageably large game tree!) it could, for example, generate moves
 -- according to various simpler strategies.
-buildTree :: (Board -> Colour -> [Position]) -- ^ Move generator
+buildTree :: (Board -> Col -> [Position]) -- ^ Move generator
              -> Board -- ^ board state
-             -> Colour -- ^ player to play next
+             -> Col -- ^ player to play next
              -> GameTree
 buildTree gen b c = let moves = gen b c in -- generated moves
                         GameTree b c (mkNextStates moves)
@@ -39,23 +39,23 @@ buildTree gen b c = let moves = gen b c in -- generated moves
                              -- here for opposite player
 
 -- generate a list of possible moves to make, in the format of a list of Positions (to move to)
--- given the current Board and the Colour representing the player who's turn it is
-gen :: Board -> Colour -> [Position]
+-- given the current Board and the Col representing the player who's turn it is
+gen :: Board -> Col -> [Position]
 -- Rather than generating every possible move (which would result in an
 -- unmanageably large game tree!) it could, for example, generate moves
 -- according to various simpler strategies.
-gen board turnColour = do let genMoveStrategyMethods = [blockEnemyCombosMoves, addToFriendlyCombosMoves, blockPotentialEnemyCombosMoves, formnewFriendlyCombosMoves, setupPotentialFriendlyCombosMoves, allMoves]
+gen board turnCol = do let genMoveStrategyMethods = [blockEnemyCombosMoves, addToFriendlyCombosMoves, blockPotentialEnemyCombosMoves, formnewFriendlyCombosMoves, setupPotentialFriendlyCombosMoves, allMoves]
                           for (method in genMoveStrategyMethods):
-                              do let poses = method board turnColour
+                              do let poses = method board turnCol
                               if poses /= null then poses
                           error "Couldn't generate a list of Positions as potential moves in gen() in MinimaxAI.hs, even with fallback to generate all possible moves."
 
-genBlockEnemyCombosMoves :: Board -> Colour -> [Position]
-genAddToFriendlyCombosMoves :: Board -> Colour -> [Position]
-genBlockPotentialEnemyCombosMoves :: Board -> Colour -> [Position]
-genFormNewFriendlyCombosMoves :: Board -> Colour -> [Position]
-genSetupPotentialFriendlyCombosMoves :: Board -> Colour -> [Position]
-genAllMoves :: Board -> Colour -> [Position]
+genBlockEnemyCombosMoves :: Board -> Col -> [Position]
+genAddToFriendlyCombosMoves :: Board -> Col -> [Position]
+genBlockPotentialEnemyCombosMoves :: Board -> Col -> [Position]
+genFormNewFriendlyCombosMoves :: Board -> Col -> [Position]
+genSetupPotentialFriendlyCombosMoves :: Board -> Col -> [Position]
+genAllMoves :: Board -> Col -> [Position]
 
 {- STRATEGY/PRIORITY ORDER:
 1. genBlockEnemyCombosMoves             ⨯  :   places to block any piece combos (of length >= 2) for opposition player
@@ -74,9 +74,9 @@ make list of Positions representing moves to assess for evaluation scores, const
 getFirstEmptyInDirFromPos pieces pos dx dy jumpLimit = [if pieces `piecesDoesntContainPos` (x,y) then (x,y) | x = fst pos + dx * jumps, y = snd pos + dy * jumps, jumps <- [1..jumpLimit]]
                                                            Nothing -- no empty piece in dir (reaches edge of board)
 
--- return list of [Position] of pieces in pieces list where colour of that piece == piece arg
-getListOfPosesOfColourOnPieces pieces colour = do let poses = []
-                                                   [if snd piece == colour then poses ++ fst piece | piece <- pieces]
+-- return list of [Position] of pieces in pieces list where Col of that piece == piece arg
+getListOfPosesOfColOnPieces pieces Col = do let poses = []
+                                                   [if snd piece == Col then poses ++ fst piece | piece <- pieces]
                                                        poses
 
 -- return list of poses not in pieces list by iterating over all possible poses
@@ -86,7 +86,7 @@ getListOfEmptyPosesOnPieces size pieces = do let poses = [], coordRange = [0..si
 
 applyFuncInEachDirFromPos board pos func resultPoses = [if (not (dx == 0 && dy == 0)) then func board pos dx dy resultPoses | dx <- [-1..1], dy <- [-1..1]]
 
-checkComboPossible pieces colour pos dx dy jumpLimit = [if pieces `getColourAtPos` x y == other colour then False | x = fst pos + dx * jumps, y = snd pos + dy * jumps, jumps <- [1..jumpLimit]]
+checkComboPossible pieces Col pos dx dy jumpLimit = [if pieces `getColAtPos` x y == other Col then False | x = fst pos + dx * jumps, y = snd pos + dy * jumps, jumps <- [1..jumpLimit]]
                                                           True
 
 
@@ -97,31 +97,31 @@ checkComboPossible pieces colour pos dx dy jumpLimit = [if pieces `getColourAtPo
 --      for each enemy piece, in each dir from it:
 --            check if the first piece from it is also enemy
 --                  if so then return position of next empty position in that direction
-genBlockEnemyCombosMoves board colour = do let enemyPieces = getListOfPosesOfColourOnPieces pieces board other colour, poses = []
+genBlockEnemyCombosMoves board Col = do let enemyPieces = getListOfPosesOfColOnPieces pieces board other Col, poses = []
                                             [applyFuncInEachDirFromPos board enemyPos checkEnemyComboMove poses | enemyPos <- enemyPieces]
                                             poses
-                                            where checkEnemyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColourAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
-                                                                                                      else if getColourAtPos pieces boardIn fst pos + dx snd pos + dy \= other colour then [] -- if first piece in dir is friendly or empty then fail
+                                            where checkEnemyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
+                                                                                                      else if getColAtPos pieces boardIn fst pos + dx snd pos + dy \= other Col then [] -- if first piece in dir is friendly or empty then fail
                                                                                                            else resultPoses ++ getFirstEmptyInDirFromPos pieces boardIn pos dx dy (target boardIn - 1)
 
 -- get list of all positions of friendly pieces on the board
 --      for each piece, in each direction from it:
 --            check there is space to reach combo of target length
 --                  if so then return position of next empty position in that direction
-genAddToFriendlyCombosMoves board colour = do let friendlyPieces = getListOfPosesOfColourOnPieces pieces board colour, poses = []
+genAddToFriendlyCombosMoves board Col = do let friendlyPieces = getListOfPosesOfColOnPieces pieces board Col, poses = []
                                               [applyFuncInEachDirFromPos board friendlyPos checkFriendlyComboMove poses | friendlyPos <- friendlyPieces]
                                               poses
-                                              where checkFriendlyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColourAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
+                                              where checkFriendlyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
                                                                                                            else resultPoses ++ getFirstEmptyInDirFromPos pieces boardIn pos dx dy (target boardIn - 1)
 
 -- get list of all enemy pieces on the board
 --      for each enemy piece, in each direction from it:
 --              check there's space to reach combo of target length
 --                    if so return first empty position in that dir (will be 1st from enemy piece)
-genBlockPotentialEnemyCombosMoves board colour = do let enemyPieces = getListOfPosesOfColourOnPieces pieces board other colour, poses = []
+genBlockPotentialEnemyCombosMoves board Col = do let enemyPieces = getListOfPosesOfColOnPieces pieces board other Col, poses = []
                                                     [applyFuncInEachDirFromPos board enemyPos checkEnemyComboMove poses | enemyPos <- enemyPieces]
                                                     poses
-                                                    where checkEnemyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColourAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
+                                                    where checkEnemyComboMove boardIn pos dx dy resultPoses = if not checkComboPossible pieces boardIn (pieces `getColAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
                                                                                                               else resultPoses ++ getFirstEmptyInDirFromPos pieces boardIn pos dx dy (target boardIn - 1)
 
 -- get list of all friendly pieces on the board
@@ -129,11 +129,11 @@ genBlockPotentialEnemyCombosMoves board colour = do let enemyPieces = getListOfP
 --          check pos at first step from it is empty
 --          check there's space in dir or reverse to form combo of target length
 --                if both pass return pos of first step from start
-genFormNewFriendlyCombosMoves board colour = do let friendlyPieces = getListOfPosesOfColourOnPieces pieces board colour, poses = []
+genFormNewFriendlyCombosMoves board Col = do let friendlyPieces = getListOfPosesOfColOnPieces pieces board Col, poses = []
                                                 [applyFuncInEachDirFromPos board friendlyPos checkFormNewFriendlyCombosMove poses | friendlyPos <- friendlyPieces]
                                                 poses
                                                 where checkFormNewFriendlyCombosMove boardIn pos dx dy resultPoses = if pieces `piecesContainsPos` fst pos + dx snd pos + dy then Nothing
-                                                                                                                     else if not checkComboPossible pieces boardIn (pieces `getColourAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
+                                                                                                                     else if not checkComboPossible pieces boardIn (pieces `getColAtPos` fst pos snd pos) pos dx dy (target boardIn - 1) then Nothing
                                                                                                                                else resultPoses ++ (fst pos + dx, snd pos + dy)
 
 -- find list of empty pieces
@@ -142,7 +142,7 @@ genFormNewFriendlyCombosMoves board colour = do let friendlyPieces = getListOfPo
 --                  find how many dirs could become a friendly combo
 --                  if none, find how many opposite dirs could combine to combo of target length (target / 2 each)
 --                  if either above pass and pos being checked not already in list of moves, add to it
-genSetupPotentialFriendlyCombosMoves board colour = do let emptyPieces = getListOfEmptyPosesOnPieces size board pieces board, poses = []
+genSetupPotentialFriendlyCombosMoves board Col = do let emptyPieces = getListOfEmptyPosesOnPieces size board pieces board, poses = []
                                                     [applyFuncInEachDirFromPos board emptyPos checkSetupPotentialFriendlyCombo poses | emptyPos <- emptyPieces]
                                                     poses
                                       
@@ -151,16 +151,16 @@ checkSetupPotentialFriendlyCombo :: Board -> Position -> Int -> Int -> [Position
 --      find how many dirs could become a friendly combo
 --      if none, find how many opposite dirs could combine to combo of target length (target / 2 each)
 --      if either above pass and pos being checked not already in list of moves, add to it
-checkSetupPotentialFriendlyCombo board pos dx dy resultPoses = do let pieces = pieces board, colour = (pieces `getColourAtPos` fst pos snd pos), target = target board
-                                                                  if checkComboPossible pieces board colour pos dx dy (target boardIn - 1) && not (elem pos resultPoses) then resultPoses ++ pos
+checkSetupPotentialFriendlyCombo board pos dx dy resultPoses = do let pieces = pieces board, Col = (pieces `getColAtPos` fst pos snd pos), target = target board
+                                                                  if checkComboPossible pieces board Col pos dx dy (target boardIn - 1) && not (elem pos resultPoses) then resultPoses ++ pos
                                                                   else -- not possible to form combo in dir given, so try to find if possible in conjunction w/ opposite direction
                                                                       do let limitForward = 0, limitBack = 0
-                                                                      do [if checkComboPossible pieces colour pos dx dy jumps then limitForward = jumps | jumps <- [1..target - 1]]
-                                                                      do [if checkComboPossible pieces colour pos negate dx negate dy jumps then limitBack = jumps | jumps <- [1..target - 1]]
+                                                                      do [if checkComboPossible pieces Col pos dx dy jumps then limitForward = jumps | jumps <- [1..target - 1]]
+                                                                      do [if checkComboPossible pieces Col pos negate dx negate dy jumps then limitBack = jumps | jumps <- [1..target - 1]]
                                                                       if limitForward + limitBack + 1 >= target then resultPoses ++ pos
 
 
-genAllMoves board colour = do let pieces = pieces board, poses = [], coordRange = [0 .. size board - 1]
+genAllMoves board Col = do let pieces = pieces board, poses = [], coordRange = [0 .. size board - 1]
                                [poses ++ pos if pieces `doesntContainPos` pos | pos = (x,y), x <- coordRange, y <- coordRange]
                                poses
 
@@ -175,21 +175,22 @@ getBestMove depthLimit tree = do let poses = [fst move | move <- next_moves tree
                                   poses !! elemIndex (max scores) scores
   
   
-getMaxEvalScore :: Int -> GameTree -> Position -> Colour -> Int
-getMaxEvalScore depthLimit tree currentDepth colour = if currentDepth >= depthLimit then return evaluate game_board tree colour
-                                                         else max [getMaxEvalScore depthLimit currTree currentDepth + 1 colour | currTree = snd move, move <- next_moves tree]
+getMaxEvalScore :: Int -> GameTree -> Position -> Col -> Int
+getMaxEvalScore depthLimit tree currentDepth Col = if currentDepth >= depthLimit then return evaluate game_board tree Col
+                                                         else max [getMaxEvalScore depthLimit currTree currentDepth + 1 Col | currTree = snd move, move <- next_moves tree]
 
-
+-}
 -- Update the world state after some time has passed
 updateWorld :: Float -- ^ time since last update (you can ignore this)
             -> World -- ^ current world state
             -> World
-updateWorld t w = addMoveToWorld w movePos turn, movePos = getBestMove (buildTree gen board world turn world)
-                    where addMoveToWorld :: World -> Position -> Colour -> World
-                          addMoveToWorld world movePos colourTurn = pieces board world ++ (movePos, colourTurn)
+updateWorld t w = w            
+{-updateWorld t w = addMoveToWorld w movePos turn, movePos = getBestMove (buildTree gen board world turn world)
+                    where addMoveToWorld :: World -> Position -> Col -> World
+                          addMoveToWorld world movePos ColTurn = pieces board world ++ (movePos, ColTurn)
                                                                     turn world = other turn world
                                                                     world
-
+-}
 {- Hint: 'updateWorld' is where the AI gets called. If the world state
  indicates that it is a computer player's turn, updateWorld should use
  'getBestMove' to find where the computer player should play, and update

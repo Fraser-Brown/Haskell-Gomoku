@@ -23,7 +23,7 @@ import MinimaxAI
 -- move
 
 main :: IO ()
-main = play (InWindow "Gomoku" (800, 800) (10, 10)) yellow 10
+main = play (InWindow "Gomoku" (1000, 1000) (10, 10)) yellow 10
             initWorld -- in Board.hs
             drawWorld -- in Draw.hs
             handleInput -- in Input.hs

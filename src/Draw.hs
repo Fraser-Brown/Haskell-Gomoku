@@ -8,9 +8,9 @@ import Board
 -- Given a world state, return a Picture which will render the world state. - https://hackage.haskell.org/package/gloss-1.1.0.0/docs/Graphics-Gloss-Picture.html
 -- Currently just draws a single blue circle as a placeholder.
 --
--- World { board :: Board, turn :: Colour }
+-- World { board :: Board, turn :: Col }
 --
--- data Board = Board { size :: Int, target :: Int, pieces :: [(Position, Colour)]}
+-- data Board = Board { size :: Int, target :: Int, pieces :: [(Position, Col)]}
 --
 -- This will need to extract the Board from the world state and draw it
 -- as a grid plus pieces.
@@ -29,7 +29,7 @@ gamePicture world = Pictures [drawNextPlayer (show(turn world)),
 
 drawNextPlayer :: String -> Picture
 -- draw text informing the user of which player (Black/White) is next
-drawNextPlayer nPlyr = Translate (-150) 350 $ Scale 0.2 0.2 $ Text $ nPlyr ++ " has the next move"
+drawNextPlayer nPlyr = Translate (-150) 300 $ Scale 0.2 0.2 $ Text $ nPlyr ++ " has the next move"
 
 --drawTargetReminder :: Int -> Picture
 -- draw text informing user of the target x in a row to get
@@ -39,7 +39,7 @@ drawGrid :: Int -> Picture
 -- draw the lines of the game grid, where n is the grid width and height
 drawGrid n = Pictures [verticalLines n, horiLines n]
 
-grey :: Color -- this is the type for colours in gloss, not the Colour type used for pieces/players
+grey :: Color -- this is the type for Cols in gloss, not the Col type used for pieces/players
 grey = makeColor 122 122 122 1
 
 -- TODO: finish the next 2 functions to draw correctly positioned grid lines for the Gomoku board
@@ -73,12 +73,12 @@ drawPiece p = if snd p == White then (Translate x y (color white (circleSolid 20
 
 drawTitle :: Picture
 -- draw the title of the game
-drawTitle =  Translate (-200) 400 $ Text ("Gomoku")
+drawTitle =  Translate (-250) 350 $ Text ("Gomoku")
 
 drawWinner:: Board -> Picture
 drawWinner board = if winner == Nothing then Blank
-                                        else if maybeToCol(winner) == White then Text ("White Wins")
-                                             else Text("Black Wins")
+                                        else if maybeToCol(winner) == White then Translate (-300) (-400) $ Text ("White Wins")
+                                             else Translate (-300) (-400) $  Text("Black Wins")
                   where winner = checkWon(board)  
 
 maybeToCol:: Maybe Col -> Col
