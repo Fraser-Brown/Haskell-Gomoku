@@ -23,7 +23,7 @@ gamePicture :: World -> Picture
 gamePicture world = Pictures [drawNextPlayer (show(turn world)), 
                               --drawTargetReminder(target (board world)),
                               drawGrid (size (board world)),
-                              drawPieces(pieces (board world)), 
+                              drawPieces(pieces (board world)) (size (board world)), 
                               drawTitle,
                               drawWinner (board world)]
 
@@ -58,16 +58,17 @@ drawhoriline :: Int -> Int -> Picture
 drawhoriline x nolines = color red $ Line [((c * 500) -250, -250) ,((c * 500) -250, 250)]
                          where c = (fromIntegral(x)/fromIntegral(nolines)) 
 
-drawPieces :: [(Position, Col)] -> Picture
+drawPieces :: [(Position, Col)] -> Int -> Picture
 -- draw each piece on the board
-drawPieces pieces = pictures [drawPiece p | p <- pieces] 
+drawPieces pieces size = pictures [drawPiece p size | p <- pieces] 
 
-drawPiece:: (Position, Col) -> Picture
-drawPiece p = if snd p == White then (Translate x y (color white (circleSolid 20)))
-                                else (Translate x y (color black (circleSolid 20)))
-                                where pos = fst p                               
-                                      x = fromIntegral(85  * (fst pos - 2)) - 42.5
-                                      y = fromIntegral(85 * (snd pos - 2)) - 42.5
+drawPiece:: (Position, Col) -> Int -> Picture
+drawPiece p size = if snd p == White then (Translate x y (color white (circleSolid (fromIntegral(c)) ))) --should be bigger for a smaller board
+                                     else (Translate x y (color black (circleSolid (fromIntegral(c)) )))
+                                     where pos = fst p
+                                           c = round(180/fromIntegral(size))                               
+                                           x = fromIntegral((fst pos)) * (500/fromIntegral(size)) - 250 + (500 /fromIntegral(size*2))
+                                           y = fromIntegral((snd pos)) * (500/fromIntegral(size)) - 250 + (500 /fromIntegral(size*2))
 
 
 

@@ -20,7 +20,7 @@ handleInput :: Event -> World -> World
 --handleInput (EventMotion (x, y)) b  = trace ("Mouse moved to: " ++ show (x,y)) b
 
 handleInput (EventKey (MouseButton LeftButton) Up m (x, y)) b = newWorld
-                                                                where pos = getPos x y
+                                                                where pos = getPos x y (size (board b))
                                                                       ans = makeMove (board b) (turn b) pos 
                                                                       newWorld = if nothingChecker(ans) == False then  b
                                                                                                                  else World (maybeToBoard(ans)) (other(turn b))
@@ -38,10 +38,10 @@ nothingChecker (Just x) = True
 maybeToBoard:: Maybe Board -> Board
 maybeToBoard (Just x) = x
 
-getPos:: Float -> Float -> Position
-getPos x y = (p, q)
-             where p = round(((x + 42)/85) + 2) --will need to change 3 if board gets bigger
-                   q = round(((y + 42)/85) + 2)
+getPos:: Float -> Float -> Int -> Position
+getPos x y size = (p, q)
+             where p = floor((x+250) / (500/fromIntegral(size))) 
+                   q = floor((y+250) / (500/fromIntegral(size))) 
 --TODO: Implement appropriate event handlers for input events such as clicking on the board (above); these will need to identify which board position a mouse location maps to, in particular
 
 {- Hint: when the 'World' is in a state where it is the human player's
