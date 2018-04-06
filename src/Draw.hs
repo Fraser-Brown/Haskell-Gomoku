@@ -16,7 +16,7 @@ import Board
 -- as a grid plus pieces.
 
 drawWorld :: World -> Picture
-drawWorld w = gamePicture w           
+drawWorld w = gamePicture w            
 
 gamePicture :: World -> Picture
 -- get composite parts to arrange combined Picture to display
@@ -25,7 +25,10 @@ gamePicture world = Pictures [drawNextPlayer (show(turn world)),
                               drawGrid (size (board world)),
                               drawPieces(pieces (board world)) (size (board world)), 
                               drawTitle,
-                              drawWinner (board world)]
+                              drawWinner (board world),
+                              drawTarget (board world),
+                              drawSize (board world),
+                              drawTimer(world)]
 
 drawNextPlayer :: String -> Picture
 -- draw text informing the user of which player (Black/White) is next
@@ -76,6 +79,14 @@ drawTitle :: Picture
 -- draw the title of the game
 drawTitle =  Translate (-250) 350 $ Text ("Gomoku")
 
+drawTarget :: Board -> Picture
+drawTarget b = Translate (300) 0 $ Scale 0.2 0.2 $ Text $ "Target : " ++ show(target b) 
+
+drawSize :: Board -> Picture
+drawSize b = Translate (300) (-100) $ Scale 0.2 0.2 $ Text $ "Size : " ++ show(size b) ++ " * " ++ show(size b) 
+
+drawTimer :: World -> Picture
+drawTimer w = Translate (-450) 0 $ Scale 0.2 0.2 $ Text $ "Timer : " ++ show(timer w)
 drawWinner:: Board -> Picture
 drawWinner board = if winner == Nothing then Blank
                                         else if maybeToCol(winner) == White then Translate (-300) (-400) $ Text ("White Wins")

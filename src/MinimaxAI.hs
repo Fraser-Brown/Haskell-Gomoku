@@ -184,7 +184,13 @@ getMaxEvalScore depthLimit tree currentDepth Col = if currentDepth >= depthLimit
 updateWorld :: Float -- ^ time since last update (you can ignore this)
             -> World -- ^ current world state
             -> World
-updateWorld t w = w            
+updateWorld t w = newWorld
+                  where newWorld = World (board w) (player) (t) (paused w)
+                        player = if t == 0 then other(turn w)
+                                           else (turn w)
+                        t = if paused w then (timer w) 
+                                        else if (timer w) > 0 then (timer w) - 1
+                                                              else 100              
 {-updateWorld t w = addMoveToWorld w movePos turn, movePos = getBestMove (buildTree gen board world turn world)
                     where addMoveToWorld :: World -> Position -> Col -> World
                           addMoveToWorld world movePos ColTurn = pieces board world ++ (movePos, ColTurn)

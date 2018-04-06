@@ -23,12 +23,46 @@ handleInput (EventKey (MouseButton LeftButton) Up m (x, y)) b = newWorld
                                                                 where pos = getPos x y (size (board b))
                                                                       ans = makeMove (board b) (turn b) pos 
                                                                       newWorld = if nothingChecker(ans) == False then  b
-                                                                                                                 else World (maybeToBoard(ans)) (other(turn b))
---handleInput (EventKey (Char k) Down _ _) b = trace ("Key " ++ show k ++ " down") b
+                                                                                                                 else World (maybeToBoard(ans)) (other(turn b)) (100) (False)
 
---handleInput (EventKey (Char k) Up _ _) b = trace ("Key " ++ show k ++ " up") b
 
+handleInput (EventKey (MouseButton RightButton) Up _ _) world = newWorld 
+                                                 where newWorld = World (Board (size b) (target b) (p)) (other(turn world)) (100) (False)
+                                                       b = (board world) 
+                                                       p = prevBoard (pieces b)
+                                                                                                                                                                                                    
+handleInput (EventKey (Char 'p') Up _ _) world = newWorld 
+                                                 where newWorld = World (board world) (other(turn world)) (timer world) (pause)
+                                                       pause = if (paused world) then False
+                                                                                 else True   
+
+
+handleInput(EventKey (SpecialKey KeyUp) Up _ _) world = newWorld 
+                                                      where newWorld = World (Board ((size b)+1) (target b) (pieces b)) (turn world) (timer world) (paused world)
+                                                            b = board world
+
+
+handleInput(EventKey (SpecialKey KeyDown) Up _ _) world = newWorld 
+                                                      where newWorld = World (Board (newSize) (target b) (pieces b)) (turn world) (timer world) (paused world)
+                                                            b = board world
+                                                            newSize = if (size b) == 1 then 1
+                                                                                       else (size b) - 1  
+                                                                                       
+handleInput(EventKey (SpecialKey KeyRight) Up _ _) world = newWorld 
+                                                      where newWorld = World (Board (size b) ((target b) + 1) (pieces b)) (turn world) (timer world) (paused world)
+                                                            b = board world
+
+
+handleInput(EventKey (SpecialKey KeyLeft) Up _ _) world = newWorld 
+                                                      where newWorld = World (Board (size b) (newTarget) (pieces b)) (turn world) (timer world) (paused world)
+                                                            b = board world
+                                                            newTarget = if (target b) == 1 then 1
+                                                                                       else (target b) - 1                                                                                          
 handleInput e b = b
+
+prevBoard:: [(Position, Col)] ->  [(Position, Col)]
+prevBoard [] = []
+prevBoard p = init(p)
 
 nothingChecker:: Maybe Board -> Bool
 nothingChecker Nothing = False

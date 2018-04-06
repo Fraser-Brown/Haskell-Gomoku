@@ -2,6 +2,7 @@ module Board where
     import Data.List (sortBy)
     import Data.Function (on)
     import Debug.Trace
+    
 
     data Col = Black | White
       deriving (Show, Eq) 
@@ -27,7 +28,7 @@ module Board where
       deriving Show
     
     -- Default board is 6x6, target is 3 in a row, no initial pieces
-    initBoard = Board 6 3 []
+   
     
     -- Overall state is the board and whose turn it is, plus any further
     -- information about the world (this may later include, for example, player
@@ -37,9 +38,9 @@ module Board where
     -- will be useful (information for the AI, for example, such as where the
     -- most recent moves were).
     data World = World { board :: Board,
-                         turn :: Col }
-    
-    initWorld = World initBoard Black
+                         turn :: Col,
+                         timer :: Int,
+                         paused :: Bool }
     
     -- Play a move on the board; return 'Nothing' if the move is invalid
     -- (e.g. outside the range of the board, or there is a piece already there)
