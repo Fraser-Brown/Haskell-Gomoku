@@ -15,8 +15,8 @@ import Board
 -- This will need to extract the Board from the world state and draw it
 -- as a grid plus pieces.
 
-drawWorld :: World -> Picture
-drawWorld w = gamePicture w            
+drawWorld :: World -> IO Picture
+drawWorld w = return $ gamePicture w            
 
 gamePicture :: World -> Picture
 -- get composite parts to arrange combined Picture to display

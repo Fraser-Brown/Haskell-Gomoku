@@ -183,9 +183,9 @@ getMaxEvalScore depthLimit tree currentDepth Col = if currentDepth >= depthLimit
 -- Update the world state after some time has passed
 updateWorld :: Float -- ^ time since last update (you can ignore this)
             -> World -- ^ current world state
-            -> World
-updateWorld t w = newWorld
-                  where newWorld = World (board w) (player) (t) (paused w)
+            -> IO World
+updateWorld t w = return newWorld
+                  where newWorld = World (board w) (player) (t) (maxTimer w) (paused w)
                         player = if t == 0 then other(turn w)
                                            else (turn w)
                         t = if paused w then (timer w) 

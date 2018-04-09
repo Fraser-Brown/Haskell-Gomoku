@@ -46,6 +46,7 @@ module Board where
     data World = World { board :: Board,
                          turn :: Col,
                          timer :: Int,
+                         maxTimer:: Int,
                          paused :: Bool }
     
     -- Play a move on the board; return 'Nothing' if the move is invalid
