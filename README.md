@@ -9,3 +9,7 @@ right click - undo move
 up/down arrow - increase/decrease size of the board
 
 right/left - increase/decrease target for game
+
+'s' - save current game at current point
+
+./gomoku filename.txt -> load previous saved game , will always save to SaveME.txt by default
