@@ -26,10 +26,16 @@ module Board where
                          pieces :: [(Position, Col)]
                        }
       deriving Show
-    
+      
+    initBoard :: [String] -> Board
+    initBoard args | length args == 2  = Board (a) (b) []
+                   | otherwise = Board 6 3 []
+                   where a = read(args !! 0) :: Int 
+                         b = read(args !! 1) :: Int
+
+
     -- Default board is 6x6, target is 3 in a row, no initial pieces
    
-    
     -- Overall state is the board and whose turn it is, plus any further
     -- information about the world (this may later include, for example, player
     -- names, timers, information about rule variants, etc)

@@ -5,6 +5,7 @@ module Main where
 import Graphics.Gloss
 import System.Environment
 import System.Directory
+import Data.Char
 
 import Board
 import Draw
@@ -29,74 +30,81 @@ import MinimaxAI
 
 main :: IO ()
 main =do args <- getArgs
+         world <- readWorld args
          play (InWindow "Gomoku" (1000, 1000) (10, 10)) yellow 10
-               (makeWorld(args)) -- in Board.hs
+               world -- in Board.hs
                drawWorld -- in Draw.hs
                handleInput -- in Input.hs
                updateWorld -- in MinimaxAI.hs
 
-makeWorld :: [String] -> World
-makeWorld args | length args == 1 = fileReader(args!!0)
-               | otherwise = World board Black 100 False
-                 where board = initBoard args 
-                 
-                 
-initBoard :: [String] -> Board
-initBoard args | length args == 2  = Board (a) (b) []
-               | otherwise = Board 6 3 []
-               where a = read(args !! 0) :: Int 
-                     b = read(args !! 1) :: Int
+defaultWorld = World (initBoard []) Black 100 False
 
-fileReader:: String -> World 
-fileReader file = do exists <- doesFileExist file
-                     if exists then
-                        do contents <- readFile(file)
-                           createFromFile (lines contents) 
-                     else do putStrLine "Cannot find file"
-                             World (Board 6 3 []) Black 100 False                         
+readWorld :: [String] -> IO World
+readWorld [] = return defaultWorld
+readWorld args = case args of
+                  [] -> return defaultWorld
+                  strings -> do exists <- doesFileExist(args!!0)
+                                case exists of
+                                     False -> return defaultWorld
+                                     True -> do contents <- readFile(args!!0)
+                                                case contents of
+                                                   [] -> return defaultWorld
+                                                   strings -> return (createFromFile(lines strings))
 
 createFromFile :: [String] -> World
-createFromFile [] = putStrLine("The file was Empty") Board 6 3 []
+createFromFile [] = World (initBoard []) Black 100 False
 
-createFromFile inp = World x y 100 False
-                   where x = Board (findSize inp) (findTarget inp) (findPieces inp [])
-                         y = findPlayer inp           
+createFromFile inp = World (x) (y) (findTimeLimt(inp)) (False)
+                     where x = (Board (findSize inp) (findTarget inp) (findPieces inp []))
+                           y = (findPlayer inp)           
+
+
+
+---------------------------------------------------------------------------------------------------
 
 
 findTarget :: [String] -> Int
-findTarget (x:inp) | take 2 x == "TG" = read(filter(\y -> y.isDigit) x) :: Int
+findTarget (x:inp) | take 2 x == "TG" = read(filter(\y -> isDigit(y)) x) :: Int
                    | length inp > 0 = findTarget(inp)     
-                   | otherwise = 3
+                   | otherwise = 4
 
 findSize :: [String] -> Int
-findSize (x:inp) | take 2 x == "SZ" = read(filter(\y -> y.isDigit) x) :: Int
-                 | length inp > 0 = findTarget(inp)     
-                 | otherwise = 6
+findSize (x:inp) | take 2 x == "SZ" = read(filter(\y -> isDigit(y)) x) :: Int
+                 | length inp > 0 = findSize(inp)     
+                 | otherwise = 7
+
+findTimeLimt :: [String] -> Int
+findTimeLimt (x:inp) | take 2 x == "TL" = read(filter(\y -> isDigit(y)) x) :: Int
+                     | length inp > 0 = findTimeLimt(inp)     
+                     | otherwise = 100                 
+--the three above could be condensed into 1 method, left for readability for now
+
 
 findPlayer :: [String] -> Col 
-findSize (x:inp) | take 2 x == "PL" = if (x !! 3) == "B" then Black
-                                                         else White   
-                 | length inp > 0 = findTarget(inp)     
-                 | otherwise = 6
+findPlayer (x:inp) | take 2 x == "PL" = if (x !! 3) == 'B' then Black
+                                                           else White   
+                   | length inp > 0 = findPlayer(inp)     
+                   | otherwise = Black
 
-findPieces :: [Strins] -> [(Position, Col)] -> [(Position, Col)] 
+findPieces :: [String] -> [(Position, Col)] -> [(Position, Col)]  --done this way to preserve move order, so that the undo will still work (potential for learning ai also)
 findPieces [] r = r
-findPieces (x:inp) pos | take 2 x == "AW" = findPieces inp (pos ++ [(y), White]) 
-                       | take 2 x == "AB" = findPieces inp (pos ++ [(y), Black])  
-                       | length inp > 0 = findTarget(inp)     
+findPieces (x:inp) pos | take 2 x == "AW" = findPieces inp (pos ++ [((y), White)]) 
+                       | take 2 x == "AB" = findPieces inp (pos ++ [((y), Black)])  
+                       | length inp > 0 = findPieces (inp) pos    
                        | otherwise = []
                        where y = (a,b)
                              jn = drop 3 x --to get just the positions 
-                             a = findA(jn, "")   
-                             b = findB(jn)
+                             a = read(findA jn "") :: Int   
+                             b = read(findB(jn)) ::Int
 
-findA:: String-> String -> Int 
-findA (x:inp) str | x == ',' = read(str) ::Int
-                  | x.isDigit = findA inp (str ++ x)
+findA:: String -> String -> String 
+findA (x:inp) str | x == ',' = str
+                  | isDigit(x) = findA inp (str ++ [x])
                   | otherwise = if null inp then str
                                              else findA inp str  
 
-findB:: String -> String ->Int
-findB (x:inp) | x == ',' = read(inp) ::Int
-              | otherwise = if null inp then -1
-                                        else findB inp 
+findB:: String -> String
+findB (x:inp) | x == ',' = (filter(\y -> isDigit(y)) inp)
+              | length inp > 0 = findB inp
+              | otherwise = "-1"
+                              
