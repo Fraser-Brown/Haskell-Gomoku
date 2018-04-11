@@ -20,16 +20,34 @@ drawWorld w = return $ gamePicture w
 
 gamePicture :: World -> Picture
 -- get composite parts to arrange combined Picture to display
-gamePicture world = Pictures [drawNextPlayer (show(turn world)), 
+gamePicture world | (typeOfGame world) == "BLANK" = menu
+                  | otherwise = game    
+                    where game = Pictures [drawNextPlayer (show(turn world)), 
                               --drawTargetReminder(target (board world)),
-                              drawGrid (size (board world)),
-                              drawPieces(pieces (board world)) (size (board world)), 
-                              drawTitle,
-                              drawWinner (board world),
-                              drawTarget (board world),
-                              drawSize (board world),
-                              drawTimer(world)]
+                                          drawGrid (size (board world)),
+                                          drawPieces(pieces (board world)) (size (board world)), 
+                                          drawTitle,
+                                          drawWinner (board world),
+                                          drawTarget (board world),
+                                          drawSize (board world),
+                                          drawTimer(world)]
 
+                          menu = drawMenu
+                          
+drawMenu:: Picture
+drawMenu = Pictures[Translate (-150) 400 $ Scale  0.6 0.6 $ Text("Gomoku"),
+            Translate (-300) 300 $ Scale  0.2 0.2 $ Text("left click : set current players piece"),
+            Translate (-300) 250 $ Scale   0.2 0.2 $ Text("right click - undo move "),
+            Translate (-300) 200 $ Scale   0.2 0.2 $ Text("p- pause / unpause timer "),
+            Translate (-300) 150 $ Scale   0.2 0.2 $ Text("up/down arrow - increase/decrease size of the board "),
+            Translate (-300) 100 $ Scale   0.2 0.2 $ Text("right/left - increase/decrease target for game "),
+            Translate (-300) 50 $ Scale   0.2 0.2 $ Text("s - save current game at current point to saveME.txt "),
+            Translate (-300) 0 $ Scale   0.2 0.2 $ Text("./gomoku filename.txt -> load previous saved game"),
+            Translate (-300) (-100) $ Scale   0.4 0.4 $ Text("Press C to play PVP"),
+            Translate (-300) (-200) $ Scale   0.4 0.4 $ Text("Press A to play vs AI")]
+
+         
+                          
 drawNextPlayer :: String -> Picture
 -- draw text informing the user of which player (Black/White) is next
 drawNextPlayer nPlyr = Translate (-150) 300 $ Scale 0.2 0.2 $ Text $ nPlyr ++ " has the next move"

@@ -18,8 +18,13 @@ import Debug.Trace
 -- to stderr, which can be a very useful way of debugging!
 handleInputIO :: Event -> World -> IO World
 handleInputIO (EventKey (Char 's') Up _ _) world = saveGame(world)
-                                                
-handleInputIO event world = return $ handleInput event world
+handleInputIO (EventKey (Char 'c') Up _ _) world = return newWorld 
+                                                 where newWorld = World (board world) (other(turn world)) (timer world) (maxTimer world) (paused world) ("PVP")
+handleInputIO (EventKey (Char 'a') Up _ _) world = return newWorld 
+                                                 where newWorld = World (board world) (other(turn world)) (timer world) (maxTimer world) (paused world) ("AI")                                                 
+handleInputIO event world |(typeOfGame world) == "BLANK" = return world
+                          |otherwise = return $ handleInput event world
+ 
 
 saveGame:: World -> IO World
 saveGame world = do writeFile("SaveME.txt") (convertWorld(world))
@@ -48,38 +53,38 @@ handleInput (EventKey (MouseButton LeftButton) Up m (x, y)) b = newWorld
                                                                 where pos = getPos x y (size (board b))
                                                                       ans = makeMove (board b) (turn b) pos 
                                                                       newWorld = if nothingChecker(ans) == False then  b
-                                                                                                                 else World (maybeToBoard(ans)) (other(turn b)) (maxTimer b) (maxTimer b) (False)
+                                                                                                                 else World (maybeToBoard(ans)) (other(turn b)) (maxTimer b) (maxTimer b) (False) (typeOfGame b)
 
 
 handleInput (EventKey (MouseButton RightButton) Up _ _) world = newWorld 
-                                                 where newWorld = World (Board (size b) (target b) (p)) (other(turn world)) (maxTimer world) (maxTimer world) (False)
+                                                 where newWorld = World (Board (size b) (target b) (p)) (other(turn world)) (maxTimer world) (maxTimer world) (False) (typeOfGame world)
                                                        b = (board world) 
                                                        p = prevBoard (pieces b)
                                                                                                                                                                                                     
 handleInput (EventKey (Char 'p') Up _ _) world = newWorld 
-                                                 where newWorld = World (board world) (other(turn world)) (timer world) (maxTimer world) (pause)
+                                                 where newWorld = World (board world) (other(turn world)) (timer world) (maxTimer world) (pause) (typeOfGame world)
                                                        pause = if (paused world) then False
                                                                                  else True   
-
+                                                                                                                                      
 
 handleInput(EventKey (SpecialKey KeyUp) Up _ _) world = newWorld 
-                                                      where newWorld = World (Board ((size b)+1) (target b) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world)
+                                                      where newWorld = World (Board ((size b)+1) (target b) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world) (typeOfGame world)
                                                             b = board world
 
 
 handleInput(EventKey (SpecialKey KeyDown) Up _ _) world = newWorld 
-                                                      where newWorld = World (Board (newSize) (target b) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world)
+                                                      where newWorld = World (Board (newSize) (target b) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world) (typeOfGame world)
                                                             b = board world
                                                             newSize = if (size b) == 1 then 1
                                                                                        else (size b) - 1  
                                                                                        
 handleInput(EventKey (SpecialKey KeyRight) Up _ _) world = newWorld 
-                                                      where newWorld = World (Board (size b) ((target b) + 1) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world)
+                                                      where newWorld = World (Board (size b) ((target b) + 1) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world) (typeOfGame world)
                                                             b = board world
 
 
 handleInput(EventKey (SpecialKey KeyLeft) Up _ _) world = newWorld 
-                                                      where newWorld = World (Board (size b) (newTarget) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world)
+                                                      where newWorld = World (Board (size b) (newTarget) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world) (typeOfGame world)
                                                             b = board world
                                                             newTarget = if (target b) == 1 then 1
                                                                                        else (target b) - 1                                                                                          

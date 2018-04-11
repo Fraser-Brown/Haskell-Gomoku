@@ -47,7 +47,8 @@ module Board where
                          turn :: Col,
                          timer :: Int,
                          maxTimer:: Int,
-                         paused :: Bool }
+                         paused :: Bool,
+                         typeOfGame :: String }
     
     -- Play a move on the board; return 'Nothing' if the move is invalid
     -- (e.g. outside the range of the board, or there is a piece already there)
@@ -173,7 +174,11 @@ module Board where
     -- An evaluation function for a minimax search. Given a board and a Col
     -- return an integer indicating how good the board is for that Col.
     evaluate :: Board -> Col -> Int
-    evaluate = undefined
-    
+    evaluate board col | getCol(checkWon(board)) == col = max
+                       | otherwise = 1 
+                       where max = maxBound::Int 
+      
+    getCol:: Maybe Col -> Col
+    getCol (Just x) = x
     
     

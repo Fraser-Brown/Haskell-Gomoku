@@ -33,6 +33,7 @@ import MinimaxAI
 main :: IO ()
 main =do args <- getArgs
          world <- readWorld args
+
          playIO (InWindow "Gomoku" (1000, 1000) (10, 10)) yellow 10
                world
                drawWorld -- in Draw.hs
@@ -42,7 +43,7 @@ main =do args <- getArgs
 
 
 
-defaultWorld = World (initBoard []) Black 100 100 False
+defaultWorld = World (initBoard []) Black 100 100 False "BLANK"
 
 readWorld :: [String] -> IO World
 readWorld [] = return defaultWorld
@@ -57,9 +58,9 @@ readWorld args = case args of
                                                    strings -> return (createFromFile(lines strings))
 
 createFromFile :: [String] -> World
-createFromFile [] = World (initBoard []) Black 100 100 False
+createFromFile [] = World (initBoard []) Black 100 100 False "BLANK"
 
-createFromFile inp = World (x) (y) (findTimeLimt(inp)) (findTimeLimt(inp)) (False)
+createFromFile inp = World (x) (y) (findTimeLimt(inp)) (findTimeLimt(inp)) (False) "BLANK" --may wish to add this on load
                      where x = (Board (findSize inp) (findTarget inp) (findPieces inp []))
                            y = (findPlayer inp)           
 
