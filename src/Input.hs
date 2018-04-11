@@ -73,10 +73,12 @@ handleInput(EventKey (SpecialKey KeyUp) Up _ _) world = newWorld
 
 
 handleInput(EventKey (SpecialKey KeyDown) Up _ _) world = newWorld 
-                                                      where newWorld = World (Board (newSize) (target b) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world) (typeOfGame world)
+                                                      where newWorld = World newBoard (turn world) (timer world) (maxTimer world) (paused world) (typeOfGame world)
                                                             b = board world
+                                                            newBoard = Board (newSize) (target b) (newPieces)
                                                             newSize = if (size b) == 1 then 1
-                                                                                       else (size b) - 1  
+                                                                                       else (size b) - 1 
+                                                            newPieces = removeOverflow (pieces b) [] newSize                            
                                                                                        
 handleInput(EventKey (SpecialKey KeyRight) Up _ _) world = newWorld 
                                                       where newWorld = World (Board (size b) ((target b) + 1) (pieces b)) (turn world) (timer world) (maxTimer world) (paused world) (typeOfGame world)
@@ -92,6 +94,12 @@ handleInput(EventKey (SpecialKey KeyLeft) Up _ _) world = newWorld
                                                                                                                                              
 handleInput e b = b
 
+removeOverflow:: [(Position, Col)]-> [(Position, Col)] -> Int -> [(Position, Col)]
+removeOverflow [] pieces _ = pieces
+removeOverflow (x:inp) pieces s | fst pos >= s = removeOverflow inp pieces s 
+                                | snd pos >= s = removeOverflow inp pieces s
+                                | otherwise = removeOverflow inp (pieces ++ [x]) s   
+                                where pos = fst x    
                   
 prevBoard:: [(Position, Col)] ->  [(Position, Col)]
 prevBoard [] = []
