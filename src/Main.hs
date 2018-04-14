@@ -12,7 +12,7 @@ import Data.Char
 import Board
 import Draw
 import Input
-import MinimaxAI
+import AI
 
 -- 'play' starts up a graphics window and sets up handlers for dealing
 -- with inputs and updating the world state.
@@ -38,7 +38,7 @@ main =do args <- getArgs
                world
                drawWorld -- in Draw.hs
                handleInputIO -- in Input.hs
-               updateWorld -- in MinimaxAI.hs
+               updateWorld -- in AI.hs
          
 
 

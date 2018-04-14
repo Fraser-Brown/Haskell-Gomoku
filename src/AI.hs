@@ -1,6 +1,6 @@
--- module for the minimax AI adapted from intial code
+-- module for the AI adapted from intial code
 
-module MinimaxAI where
+module AI where
 
 import Board
 import System.Random
@@ -36,6 +36,7 @@ checkValid (a:inp) pos | v == pos = False
                        | otherwise = checkValid (inp) pos  
                        where v = fst(a)
 
+
 -- use gen method to generate list of every possible valid move
 -- then go along tree (of moves) up to depth limit (x moves in future) and check evaluation scores of resultant boards
 -- choose move that results in descendants with best eval scores (max, or average, or combo of measures..?)
@@ -43,10 +44,13 @@ makeMoveAI:: World -> World
 makeMoveAI world = newWorld 
                      where newWorld = World (newBoard) (other(turn world)) (maxTimer world) (maxTimer world) (False) (typeOfGame world)
                            newBoard = maybeTo(makeMove (board world) (turn world) newPos)
-                           newPos = chooseMoveMinMax (board world)
+                           newPos = chooseMoveMinMax (board world turn world)
 
-chooseMoveMinMax :: Board -> Position                                    
-chooseMoveMinMax board = undefined
+
+chooseMoveMinMax :: Board -> Col -> Position
+chooseMoveMinMax board turnCol = undefined
+
+
 maybeTo:: Maybe a -> a
 maybeTo (Just x) = x
 

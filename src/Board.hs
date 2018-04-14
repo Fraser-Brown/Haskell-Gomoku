@@ -156,32 +156,34 @@ module Board where
                                | winner == Nothing = checkDiagonalCross board (x+1) 
                                where p = pieces board
                                      s = size board  
-                                     winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)                            
-   
+                                     winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)
+                                     
 
-    {- Hint: One way to implement 'checkWon' would be to write functions
-    which specifically check for lines in all 8 possible directions
-    (NW, N, NE, E, W, SE, SW)
-    
-    In these functions:
-    To check for a line of n in a row in a direction D:
-    For every position ((x, y), col) in the 'pieces' list:
-    - if n == 1, the Col 'col' has won
-    - if n > 1, move one step in direction D, and check for a line of
-      n-1 in a row.
-    -}
-    
-    -- An evaluation function for a minimax search. Given a board and a Col
-    -- return an integer indicating how good the board is for that Col.
-    evaluate :: Board -> Col -> Int
-    evaluate board col | getCol(checkWon(board)) == col = max
-                       -- | otherwise = [(currCombosScore + possCombosScore) * normaliser] - same for other player
-                       -- currCombosScore = sum of 2 ^ (length - 1) for each friendly combo of pieces - same for opp combos
-                       -- possCombosScore = sum of no possible winning combos (i.e. where you could still form a winning combo)
-                       -- normaliser uses board size to make evaulate score roughly 1-100
-                       | otherwise = 1 
-                       where max = maxBound::Int 
+      {- Hint: One way to implement 'checkWon' would be to write functions
+      which specifically check for lines in all 8 possible directions
+      (NW, N, NE, E, W, SE, SW)
       
-    getCol:: Maybe Col -> Col
-    getCol (Just x) = x
+      In these functions:
+      To check for a line of n in a row in a direction D:
+      For every position ((x, y), col) in the 'pieces' list:
+      - if n == 1, the Col 'col' has won
+      - if n > 1, move one step in direction D, and check for a line of
+      n-1 in a row.
+      -}
+      
+      -- An evaluation function for a minimax search. Given a board and a Col
+      -- return an integer indicating how good the board is for that Col.
+      evaluate:: Board -> Col -> Int
+      evaluate board col | getCol(checkWon(board)) == col = max
+                        | otherwise = currCombosScore col - currCombosScore other col
+                        -- eval score = sum of n x 2 ^ (length - 1) for each friendly combo of pieces - same for opp combos
+                        -- | otherwise = 1 
+                        where max = maxBound::Int
+                              currCombosScore colIn = sum findNoCombosOfLength combosRange colIn board * (2 ** (combosRange - 1))
+                                                      where combosRange = [1.. target board]
 
+      findNoCombosOfLength:: Int -> Col -> Board -> Int -- find the number of combinations of a given colour and length on a given board
+      findNoCombosOfLength comboLength colour board = undefined
+
+      getCol:: Maybe Col -> Col
+      getCol (Just x) = x
