@@ -1,5 +1,4 @@
 -- module for the minimax AI adapted from intial code
--- TODO: refine, test and debug the methods below
 
 module MinimaxAI where
 
@@ -11,7 +10,6 @@ data GameTree = GameTree { game_board :: Board,
                            next_moves :: [(Position, GameTree)] }
 
 
- 
 updateWorld :: Float -- ^ time since last update (you can ignore this)
             -> World -- ^ current world state
             -> IO World
@@ -36,8 +34,11 @@ checkValid :: [(Position, Col)] -> Position -> Bool
 checkValid [] _ = True
 checkValid (a:inp) pos | v == pos = False
                        | otherwise = checkValid (inp) pos  
-                       where v = fst(a)   
+                       where v = fst(a)
 
+-- use gen method to generate list of every possible valid move
+-- then go along tree (of moves) up to depth limit (x moves in future) and check evaluation scores of resultant boards
+-- choose move that results in descendants with best eval scores (max, or average, or combo of measures..?)
 makeMoveAI:: World -> World                                                              
 makeMoveAI world = newWorld 
                      where newWorld = World (newBoard) (other(turn world)) (maxTimer world) (maxTimer world) (False) (typeOfGame world)

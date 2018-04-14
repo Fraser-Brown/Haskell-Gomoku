@@ -159,7 +159,7 @@ module Board where
                                      winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)                            
    
 
-    {- Hint: One way to implement 'checkWon' would be to write functions 
+    {- Hint: One way to implement 'checkWon' would be to write functions
     which specifically check for lines in all 8 possible directions
     (NW, N, NE, E, W, SE, SW)
     
@@ -175,10 +175,13 @@ module Board where
     -- return an integer indicating how good the board is for that Col.
     evaluate :: Board -> Col -> Int
     evaluate board col | getCol(checkWon(board)) == col = max
+                       -- | otherwise = [(currCombosScore + possCombosScore) * normaliser] - same for other player
+                       -- currCombosScore = sum of 2 ^ (length - 1) for each friendly combo of pieces - same for opp combos
+                       -- possCombosScore = sum of no possible winning combos (i.e. where you could still form a winning combo)
+                       -- normaliser uses board size to make evaulate score roughly 1-100
                        | otherwise = 1 
                        where max = maxBound::Int 
       
     getCol:: Maybe Col -> Col
     getCol (Just x) = x
-    
-    
+
