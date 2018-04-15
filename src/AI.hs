@@ -46,10 +46,27 @@ makeMoveAI world = newWorld
                            newBoard = maybeTo(makeMove (board world) (turn world) newPos)
                            newPos = chooseMoveMinMax (board world turn world)
 
+gen:: [(Position, Col)] -> Col -> [Position]
+gen pieces turnCol x y size | x == 0 && y == 0 = []
+                            | checkValid pieces (x,y) = (x,y) : rest
+                            | = rest
+                            where rest = gen pieces turnCol newX newY size
+                                  newY = y - 1
+                                  if newY == 0 then if x > 0 then do
+                                                                     newY = size - 1
+                                                                     newX = x - 1
+                                                    else then newX = 0
+                                  else then newX = x
+
+makeBoardWithMove:: Position -> Col -> Board -> Board
+makeBoardWithMove movePos turnCol startBoard = newBoard
+                                               where newBoard = {size board, target board, newPieces}
+                                                     newPieces = pieces board ++ (movePos, turnCol)
 
 chooseMoveMinMax :: Board -> Col -> Position
-chooseMoveMinMax board turnCol = undefined
-
+chooseMoveMinMax board turnCol = do let moves = gen pieces board turnCol size board - 1 size board - 1 size board
+                                    do let scores <- [evaluate makeBoardWithMove pos turnCol board | pos <- moves]
+                                          moves !! (elemIndex max scores)
 
 maybeTo:: Maybe a -> a
 maybeTo (Just x) = x
