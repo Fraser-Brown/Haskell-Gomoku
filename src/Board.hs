@@ -181,6 +181,7 @@ module Board where
       
       -- An evaluation function for a minimax search. Given a board and a Col
       -- return an integer indicating how good the board is for that Col.
+      -- TODO: find way to factor other advantageous properties, e.g. adjacent combos with a gap in between which could combine to target length if piece/s put in gap
       evaluate:: Board -> Col -> Int
       evaluate board col | getCol(checkWon(board)) == col = max
                          | otherwise = currCombosScore col - currCombosScore other col

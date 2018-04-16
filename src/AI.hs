@@ -60,6 +60,7 @@ gen pieces turnCol x y size | x == 0 && y == 0 = []
                                   else then newX = x
 
 -- applies a move from a player to current Board, returning the new resultant Board with the move added
+-- TODO: maybe add enemy minimax move here (see next TODO)
 makeBoardWithMove:: Position -> Col -> Board -> Board
 makeBoardWithMove movePos turnCol startBoard = newBoard
                                                where newBoard = {size board, target board, newPieces}
@@ -67,7 +68,7 @@ makeBoardWithMove movePos turnCol startBoard = newBoard
 
 -- go along maxDepth moves (from 1) and find the max eval score of descendant nodes at the maximum depth for each branch (starting move)
 -- recursively pass max eval scores up stack to top call, to then return move with the descendant node with max eval score
--- TODO: find a way to factor in opp player moves (ignores them in makeBoardWithMove presently)
+-- TODO: find a way to factor in opp player moves (ignores them in makeBoardWithMove presently) - assumes they use same method for max eval score
 chooseMoveMinMax :: Board -> Col -> Position
 chooseMoveMinMax board turnCol depth = do let moves = gen pieces board turnCol size board - 1 size board - 1 size board
                                               if depth == maxDepth then max [evaluate (makeBoardWithMove pos turnCol board) turnCol | pos <- moves]
