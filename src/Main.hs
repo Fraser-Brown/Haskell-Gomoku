@@ -34,11 +34,11 @@ main :: IO ()
 main =do args <- getArgs
          world <- readWorld args
 
-         playIO (InWindow "Gomoku" (1000, 1000) (10, 10)) yellow 10
+         playIO (InWindow "Gomoku" (1200, 1000) (10, 10)) yellow 10
                world
                drawWorld -- in Draw.hs
                handleInputIO -- in Input.hs
-               updateWorld -- in MinimaxAI.hs
+               updateWorld -- in AI.hs
          
 
 
