@@ -88,15 +88,15 @@ makeNewX size x y | y == 0 && x > 0 = (size - 1, x -1)
                   
 makeBoardWithMove:: Position -> Col -> Board -> Board
 makeBoardWithMove movePos turnCol startBoard = newBoard
-                                               where newBoard = Board (size startBoard) (target startBoard) newPieces
-                                                     newPieces = boardWithFriendlyMove ++ [enemyMove]
-                                                     boardWithFriendlyMove = (pieces startBoard) ++ [(movePos, turnCol)]
-                                                     enemyMove = minimaxOneMoveDepth boardWithFriendlyMove (other col) :: (Position, Col)
+                                               where piecesInWithFriendlyMove = (pieces startBoard) ++ [(movePos, turnCol)]
+                                                     enemyMove = minimaxOneMoveDepth (Board (size startBoard) (target startBoard) piecesInWithFriendlyMove) (other turnCol) :: (Position, Col)
+                                                     newPieces = piecesInWithFriendlyMove ++ [enemyMove]
+                                                     newBoard = Board (size startBoard) (target startBoard) newPieces
 
 
 -- minimax AI looking only 1 move forward
 minimaxOneMoveDepth:: Board -> Col -> (Position, Col)
-minimaxOneMoveDepth board col = findLargestScore posesAndScores
+minimaxOneMoveDepth board col = ((findLargestScore posesAndScores ((-1,-1), 0)), col)
                                 where posesAndScores = [(pos, scoreFromPos pos) | pos <- poses]
                                       scoreFromPos posIn = evaluate (makeBoardWithMove posIn col board) col
                                       poses = gen (pieces board) col (size board - 1) (size board - 1) (size board)
