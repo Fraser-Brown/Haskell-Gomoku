@@ -38,7 +38,7 @@ main =do args <- getArgs
                world
                drawWorld -- in Draw.hs
                handleInputIO -- in Input.hs
-               updateWorld -- in AI.hs
+               updateWorld -- in MinimaxAI.hs
          
 
 
@@ -51,11 +51,18 @@ readWorld args = case args of
                   [] -> return defaultWorld
                   strings -> do exists <- doesFileExist(args!!0)
                                 case exists of
-                                     False -> return defaultWorld
+                                     False -> return (cmdLineWorld args)
                                      True -> do contents <- readFile(args!!0)
                                                 case contents of
                                                    [] -> return defaultWorld
                                                    strings -> return (createFromFile(lines strings))
+
+
+cmdLineWorld::[String] -> World     
+cmdLineWorld args = World b Black 100 100 False "BLANK" --may wish to add full cmd line args and input checking
+                  where b = Board s t []
+                        s = read(args!!0) :: Int
+                        t = read(args!!1) :: Int                                         
 
 createFromFile :: [String] -> World
 createFromFile [] = World (initBoard []) Black 100 100 False "BLANK"

@@ -69,6 +69,7 @@ module Board where
     -- Check whether the board is in a winning state for either player.
     -- Returns 'Nothing' if neither player has won yet
     -- Returns 'Just c' if the player 'c' has won
+        
     targetInARow :: [(Position, Col)] -> Int -> Maybe Col  
     targetInARow pieces target | tooManyCheck w target = Just(White)
                                | tooManyCheck b target = Just(Black)
@@ -76,27 +77,21 @@ module Board where
                                where w = (filter(\y -> snd y == White) pieces)
                                      b = (filter(\y -> snd y == Black) pieces)
 
-    -- recursively go through pieces list if enough to form combo of target length
-    -- check if the (target)th and (target - 1)th pos in the list are next to each other
-    -- if so remove the first pos from pieces and call recursively
+
     tooManyCheck:: [(Position, Col)]-> Int-> Bool
     tooManyCheck pieces target | length pieces < target = False
                                | length pieces == target = distanceCheckAll pieces
-                               | distanceCheckAll (take target pieces) = distanceChecker (pieces !! (target -1)) (pieces !! target) == False 
+                               | distanceCheckAll (take target pieces) =  distanceChecker (pieces !! (target -1)) (pieces !! target) == False 
                                | otherwise = tooManyCheck (drop 1 pieces) target
-
-    -- recursively check the distance between poses in a list of pieces
-    -- if the first 2 poses are next to each other, recall with first pos dropped
-    -- else if length now is 1 return true, else return false
+                        
     distanceCheckAll::[(Position, Col)] -> Bool
     distanceCheckAll [] = False
     distanceCheckAll pieces | length pieces == 1 = True
                             | distanceChecker (head pieces) (pieces !! 1) = distanceCheckAll (drop 1 pieces)
                             | otherwise = False
     
-    -- returns True if each corresponding coordinates on two Positions are <= 1 in difference
     distanceChecker:: (Position, Col) -> (Position, Col)-> Bool    
-    distanceChecker a b | abs (x-y) > 1 = False -- don't need to check if colours are same because already filtered them in targetInARow
+    distanceChecker a b | abs (x-y) > 1 = False
                         | abs (p-q) > 1 = False
                         | otherwise = True
                         where x = fst(fst a)
@@ -104,9 +99,6 @@ module Board where
                               p = snd(fst a)
                               q = snd(fst b)
     
-    -- check rows, columns, and diagonal directions recursively
-    -- if combos of target length of one colour is found return that colour
-    -- otherwise return false
     checkWon :: Board -> Maybe Col
     checkWon board | r /= Nothing = r
                    | c /= Nothing = c
@@ -164,36 +156,22 @@ module Board where
                                | winner == Nothing = checkDiagonalCross board (x+1) 
                                where p = pieces board
                                      s = size board  
-                                     winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)
-                                     
+                                     winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)                            
+   
+    
+    evaluate:: Board -> Col -> Int
+    evaluate board col | getCol(checkWon(board)) == col = max
+                       | otherwise = currCombosScore col board - currCombosScore (other col) board
+                        where max = maxBound::Int
 
-      {- Hint: One way to implement 'checkWon' would be to write functions
-      which specifically check for lines in all 8 possible directions
-      (NW, N, NE, E, W, SE, SW)
-      
-      In these functions:
-      To check for a line of n in a row in a direction D:
-      For every position ((x, y), col) in the 'pieces' list:
-      - if n == 1, the Col 'col' has won
-      - if n > 1, move one step in direction D, and check for a line of
-      n-1 in a row.
-      -}
-      
-      -- An evaluation function for a minimax search. Given a board and a Col
-      -- return an integer indicating how good the board is for that Col.
-      -- TODO: find way to factor other advantageous properties, e.g. adjacent combos with a gap in between which could combine to target length if piece/s put in gap
-      evaluate:: Board -> Col -> Int
-      evaluate board col | getCol(checkWon(board)) == col = max
-                         | otherwise = currCombosScore col - currCombosScore other col
-                         -- eval score = sum of n x 2 ^ (length - 1) for each friendly combo of pieces - same for opp combos
-                         -- | otherwise = 1 
-                         where max = maxBound::Int
-                               currCombosScore colIn = sum findNoCombosOfLength combosRange colIn board * (2 ** (combosRange - 1))
-                                                       where combosRange = [1.. target board]
+                                                 
+    currCombosScore:: Col -> Board -> Int
+    currCombosScore colIn  board = sum (findNoCombosOfLength 1 ((target board)-1) colIn board)
 
-      -- find the number of combinations of a given colour and length on a given board (e.g. no of 3 in a row for black)
-      findNoCombosOfLength:: Int -> Col -> Board -> Int
-      findNoCombosOfLength comboLength colour board = undefined -- TODO: implement this. I feel Fraser can do this better than me because he implemented checkWon and submethods.
+    findNoCombosOfLength:: Int -> Int -> Col -> Board -> [Int]
+    findNoCombosOfLength comboLength maxLength colour board = undefined                                                  
 
-      getCol:: Maybe Col -> Col
-      getCol (Just x) = x
+    getCol:: Maybe Col -> Col
+    getCol (Just x) = x
+    
+    
