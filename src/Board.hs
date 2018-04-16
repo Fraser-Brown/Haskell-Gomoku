@@ -171,7 +171,6 @@ module Board where
                                       where comboLengths = [1.. (target board) -1] 
 
     -- return int showing how many times there is a combo of pieces of a specific given length and of the same (given) colour, on a given board
-    -- 
     findNoCombosOfLength:: Int -> Col -> Board -> Int
     findNoCombosOfLength comboLength col board = r + cl + ci + co
                                                  where r = rowIncrementer board 0 comboLength 0

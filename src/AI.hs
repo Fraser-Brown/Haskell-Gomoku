@@ -45,10 +45,10 @@ makeMoveAI world = newWorld
                            newPos = chooseMoveMinMax (board world) (turn world)
                            
 chooseMoveMinMax :: Board  -> Col -> Position                                    
-chooseMoveMinMax board turnCol =    findLargestScore posesAndScores ((-1,-1), 0)
-                                          where poses = gen (pieces board) turnCol (size board - 1) (size board - 1) (size board)
-                                                posesAndScores = getPosesAndScores poses maxDepth board turnCol
-                                                maxDepth = 3
+chooseMoveMinMax board turnCol = findLargestScore posesAndScores ((-1,-1), 0)
+                                    where poses = gen (pieces board) turnCol (size board - 1) (size board - 1) (size board)
+                                          posesAndScores = getPosesAndScores poses maxDepth board turnCol
+                                          maxDepth = 3
 
 getPosesAndScores :: [Position] -> Int -> Board -> Col -> [(Position, Int)]
 getPosesAndScores poses maxDepth board col =  [(pos, scoreFromPos pos) | pos <- poses]
@@ -62,15 +62,15 @@ findLargestScore (x : inp) y | snd x > snd y = findLargestScore inp x
                              
 getMaxEvalScoreForMove :: Board-> Int -> Int -> Col -> Int
 getMaxEvalScoreForMove startBoard depth maxDepth col | depth == maxDepth && finalEvalVals /= [] = maximum finalEvalVals
-                                                     -- | currentEvalScore < minEvalScoreToExamineChildNodes = currentEvalScore
+                                                     | currentEvalScore < minEvalScoreToExamineChildNodes = currentEvalScore
                                                      | recursiveResults /= [] = maximum recursiveResults
                                                      | otherwise = maxBound :: Int --Potentially change
-                                                       where poses = gen (pieces startBoard) col (size startBoard - 1) (size startBoard - 1) (size startBoard)
+                                                       where poses = filterPosesWithAdjacentPieces (gen (pieces startBoard) col (size startBoard - 1) (size startBoard - 1) (size startBoard)) (pieces startBoard) (size startBoard)
                                                              finalEvalVals = [evaluate board col | board <- newBoards]
                                                              recursiveResults = [getMaxEvalScoreForMove board (depth + 1) maxDepth col | board <- newBoards]
                                                              newBoards = [makeBoardWithMove pos col startBoard | pos <- poses]
-                                                             -- currentEvalScore = evaluate startBoard col
-                                                             --minEvalScoreToExamineChildNodes = 0 -- effectively equal with opposition player
+                                                             currentEvalScore = evaluate startBoard col
+                                                             minEvalScoreToExamineChildNodes = 0 -- effectively equal with opposition player
 
 gen:: [(Position, Col)] -> Col -> Int -> Int -> Int -> [Position]
 gen pieces turnCol x y size | x == 0 && y == 0 = []
@@ -80,6 +80,9 @@ gen pieces turnCol x y size | x == 0 && y == 0 = []
                                   newVals = makeNewX size x y
                                   newY = fst newVals
                                   newX = snd newVals
+
+filterPosesWithAdjacentPieces:: [Position] -> [(Position, Col)] -> Int -> [Position]
+filterPosesWithAdjacentPieces posesIn pieces boardSize = undefined
 
 makeNewX:: Int -> Int -> Int -> (Int, Int)
 makeNewX size x y | y == 0 && x > 0 = (size - 1, x -1)

@@ -60,7 +60,7 @@ drawGrid :: Int -> Picture
 -- draw the lines of the game grid, where n is the grid width and height
 drawGrid n = Pictures [verticalLines n, horiLines n]
 
-grey :: Color -- this is the type for Cols in gloss, not the Col type used for pieces/players
+grey :: Color -- this is the type for Colours in gloss, not the Col type used for pieces/players
 grey = makeColor 122 122 122 1
 
 -- TODO: finish the next 2 functions to draw correctly positioned grid lines for the Gomoku board
