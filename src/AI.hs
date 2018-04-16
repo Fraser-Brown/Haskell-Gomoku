@@ -17,8 +17,7 @@ updateWorld :: Float -- ^ time since last update (you can ignore this)
             -> World -- ^ current world state
             -> IO World
 
-updateWorld t w | checkWon (board w) /= Nothing = return w -- if game is over don't keep going
-                | (typeOfGame w) == "AI" && (turn w) == Black = return (makeMoveAI w)
+updateWorld t w | (typeOfGame w) == "AI" && (turn w) == Black = return (makeMoveAI w)
                 | (typeOfGame w) == "AI" = return (timedWorld w)  
                 | (typeOfGame w) == "PVP"  = return (timedWorld w)
                 | otherwise = return w 
@@ -79,7 +78,7 @@ getMaxEvalScoreForMove startBoard depth maxDepth col | checkWon startBoard /= No
                                                              recursiveResults = [getMaxEvalScoreForMove board (depth + 1) maxDepth col | board <- newBoards]
                                                              newBoards = [makeBoardWithMove pos col startBoard | pos <- poses]
                                                              currentEvalScore = evaluate startBoard col
-                                                             minEvalScoreToExamineChildNodes = 0 -- effectively equal with opposition player
+                                                             minEvalScoreToExamineChildNodes = (target startBoard - 2) * (2 ^ (target startBoard - 2))
                                                              winningCol = getCol (checkWon startBoard)
 
 -- generate the list of all possible valid moves on a given board (and for a given colour)
