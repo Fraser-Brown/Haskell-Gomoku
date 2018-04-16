@@ -61,8 +61,9 @@ findLargestScore (x : inp) y | snd x > snd y = findLargestScore inp x
                              
                              
 getMaxEvalScoreForMove :: Board-> Int -> Int -> Col -> Int
-getMaxEvalScoreForMove startBoard depth maxDepth col | depth == maxDepth = maximum finalEvalVals
-                                                     | otherwise = maximum recursiveResults
+getMaxEvalScoreForMove startBoard depth maxDepth col | depth == maxDepth && finalEvalVals /= [] = maximum finalEvalVals
+                                                     | recursiveResults /= [] = maximum recursiveResults  
+                                                     | otherwise = maxBound :: Int --Potentially change
                                                        where poses = gen (pieces startBoard) col (size startBoard - 1) (size startBoard - 1) (size startBoard)
                                                              finalEvalVals = [evaluate board col | board <- newBoards]
                                                              recursiveResults = [getMaxEvalScoreForMove board (depth + 1) maxDepth col | board <- newBoards]
@@ -85,7 +86,9 @@ makeNewX size x y | y == 0 && x > 0 = (size - 1, x -1)
 makeBoardWithMove:: Position -> Col -> Board -> Board
 makeBoardWithMove movePos turnCol startBoard = newBoard
                                                where newBoard = Board (size startBoard) (target startBoard) newPieces
-                                                     newPieces = (pieces startBoard) ++ [(movePos, turnCol)]                  
+                                                     newPieces = boardWithFriendlyMove ++ [enemyMove]
+                                                     boardWithFriendlyMove = (pieces startBoard) ++ [(movePos, turnCol)]
+                                                     enemyMove = undefined :: (Position, Col) -- minimax looking only 1 move forward
 
 
 

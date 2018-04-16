@@ -160,17 +160,56 @@ module Board where
    
     
     evaluate:: Board -> Col -> Int
-    evaluate board col | getCol(checkWon(board)) == col = max
+    evaluate board col | winner /= Nothing && getCol(winner) == col = max
                        | otherwise = currCombosScore col board - currCombosScore (other col) board
                         where max = maxBound::Int
+                              winner = checkWon(board)
 
                                                  
     currCombosScore:: Col -> Board -> Int
-    currCombosScore colIn  board = sum (findNoCombosOfLength 1 ((target board)-1) colIn board)
+    currCombosScore colIn board = sum [(findNoCombosOfLength comboLength colIn board) * (2 ^ (comboLength - 1)) | comboLength <- comboLengths]
+                                      where comboLengths = [1.. (target board) -1] 
 
-    findNoCombosOfLength:: Int -> Int -> Col -> Board -> [Int]
-    findNoCombosOfLength comboLength maxLength colour board = undefined                                                  
+    -- return int showing how many times there is a combo of pieces of a specific given length and of the same (given) colour, on a given board
+    -- 
+    findNoCombosOfLength:: Int -> Col -> Board -> Int
+    findNoCombosOfLength comboLength col board = r + cl + ci + co
+                                                 where r = rowIncrementer board 0 comboLength 0
+                                                       cl = collumnIncrementer board 0 comboLength 0      
+                                                       ci = crissIncrementer board 0 comboLength 0   
+                                                       co = crossIncrementer board 0 comboLength 0                                      
 
+    
+    rowIncrementer :: Board -> Int -> Int -> Int -> Int
+    rowIncrementer board x len total | x > s = total
+                                     | otherwise = rowIncrementer board (x+1) len (total + c) 
+                                     where p = pieces board
+                                           s = size board  
+                                           c = counter(filter(\y -> fst(fst y) == x) p) len  
+
+    collumnIncrementer :: Board -> Int -> Int -> Int -> Int
+    collumnIncrementer board x len total | x > s = total
+                                         | otherwise = collumnIncrementer board (x+1) len (total + c) 
+                                          where p = pieces board
+                                                s = size board  
+                                                c = counter (filter(\y -> snd(fst y) == x) p) len   
+    crissIncrementer :: Board -> Int -> Int -> Int -> Int
+    crissIncrementer board x len total | x > s = total
+                                       | otherwise = crissIncrementer board (x+1) len (total + c) 
+                                          where p = pieces board
+                                                s = size board  
+                                                c = counter (filter( \y -> snd(fst y) + fst(fst y) == x) p) len 
+                                                
+    crossIncrementer :: Board -> Int -> Int -> Int -> Int
+    crossIncrementer board x len total | x > s = total
+                                       | otherwise = crossIncrementer board (x+1) len (total + c) 
+                                          where p = pieces board
+                                                s = size board  
+                                                c = counter (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) len                                               
+    counter ::  [(Position, Col)] -> Int  -> Int
+    counter pieces target = length pieces
+                              
+      
     getCol:: Maybe Col -> Col
     getCol (Just x) = x
     
