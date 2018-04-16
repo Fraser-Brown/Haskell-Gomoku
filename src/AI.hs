@@ -62,15 +62,15 @@ findLargestScore (x : inp) y | snd x > snd y = findLargestScore inp x
                              
 getMaxEvalScoreForMove :: Board-> Int -> Int -> Col -> Int
 getMaxEvalScoreForMove startBoard depth maxDepth col | depth == maxDepth && finalEvalVals /= [] = maximum finalEvalVals
-                                                     | currentEvalScore < minEvalScoreToExamineChildNodes = currentEvalScore
-                                                     | recursiveResults /= [] = maximum recursiveResults  
+                                                     -- | currentEvalScore < minEvalScoreToExamineChildNodes = currentEvalScore
+                                                     | recursiveResults /= [] = maximum recursiveResults
                                                      | otherwise = maxBound :: Int --Potentially change
                                                        where poses = gen (pieces startBoard) col (size startBoard - 1) (size startBoard - 1) (size startBoard)
                                                              finalEvalVals = [evaluate board col | board <- newBoards]
                                                              recursiveResults = [getMaxEvalScoreForMove board (depth + 1) maxDepth col | board <- newBoards]
                                                              newBoards = [makeBoardWithMove pos col startBoard | pos <- poses]
-                                                             currentEvalScore = evaluate startBoard col
-                                                             minEvalScoreToExamineChildNodes = 0 -- effectively equal with opposition player
+                                                             -- currentEvalScore = evaluate startBoard col
+                                                             --minEvalScoreToExamineChildNodes = 0 -- effectively equal with opposition player
 
 gen:: [(Position, Col)] -> Col -> Int -> Int -> Int -> [Position]
 gen pieces turnCol x y size | x == 0 && y == 0 = []
