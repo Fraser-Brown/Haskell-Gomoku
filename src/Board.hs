@@ -122,12 +122,12 @@ module Board where
                      | winner == Nothing = checkRow board (x+1) 
                      where p = pieces board
                            s = size board  
-                           winner = rowScanner (filter(\y -> fst(fst y) == x) p) (target board) 
+                           winner = rowScanner (filter(\y -> fst(fst y) == x) p) (target board)
 
     colScanner ::  [(Position, Col)] -> Int  -> Maybe Col  
     colScanner pieces target | length pieces < target = Nothing
                              | otherwise = targetInARow sorted target 
-                             where sorted = sortBy (compare `on` (\(a,b) -> fst a)) pieces   
+                             where sorted = sortBy (compare `on` (\(a,b) -> fst a)) pieces
 
     checkCol :: Board -> Int -> Maybe Col
     checkCol board x | x > s = Nothing
@@ -135,12 +135,12 @@ module Board where
                      | winner == Nothing = checkCol board (x+1) 
                      where p = pieces board
                            s = size board  
-                           winner = colScanner (filter(\y -> snd(fst y) == x) p) (target board) 
+                           winner = colScanner (filter(\y -> snd(fst y) == x) p) (target board)
 
     diagonalScanner ::  [(Position, Col)] -> Int  -> Maybe Col  
     diagonalScanner pieces target | length pieces < target = Nothing
                                   | otherwise =  targetInARow sorted target
-                                  where sorted = sortBy (compare `on` (\(a,b) -> (fst a)) )pieces  
+                                  where sorted = sortBy (compare `on` (\(a,b) -> (fst a)) )pieces
 
     checkDiagonalCriss :: Board -> Int -> Maybe Col --bottom left to top right /
     checkDiagonalCriss board x | x > s * 2 = Nothing
@@ -156,7 +156,7 @@ module Board where
                                | winner == Nothing = checkDiagonalCross board (x+1) 
                                where p = pieces board
                                      s = size board  
-                                     winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)                            
+                                     winner = diagonalScanner (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) (target board)
    
     
     evaluate:: Board -> Col -> Int

@@ -65,7 +65,8 @@ getMaxEvalScoreForMove startBoard depth maxDepth col | depth == maxDepth && fina
                                                      | currentEvalScore < minEvalScoreToExamineChildNodes = currentEvalScore
                                                      | recursiveResults /= [] = maximum recursiveResults
                                                      | otherwise = maxBound :: Int --Potentially change
-                                                       where poses = filterPosesWithAdjacentPieces (gen (pieces startBoard) col (size startBoard - 1) (size startBoard - 1) (size startBoard)) (pieces startBoard) (size startBoard)
+                                                       where genPoses = gen (pieces startBoard) col (size startBoard - 1) (size startBoard - 1) (size startBoard)
+                                                             poses = filterPosesWithAdjacentPieces genPoses (pieces startBoard)
                                                              finalEvalVals = [evaluate board col | board <- newBoards]
                                                              recursiveResults = [getMaxEvalScoreForMove board (depth + 1) maxDepth col | board <- newBoards]
                                                              newBoards = [makeBoardWithMove pos col startBoard | pos <- poses]
@@ -81,8 +82,21 @@ gen pieces turnCol x y size | x == 0 && y == 0 = []
                                   newY = fst newVals
                                   newX = snd newVals
 
-filterPosesWithAdjacentPieces:: [Position] -> [(Position, Col)] -> Int -> [Position]
-filterPosesWithAdjacentPieces posesIn pieces boardSize = undefined
+filterPosesWithAdjacentPieces:: [Position] -> [(Position, Col)] -> [Position]
+filterPosesWithAdjacentPieces posesIn pieces | posesIn == [] = []
+                                             | firstPosHasAdjacentPieces = firstPos : rest
+                                             | otherwise = rest
+                                                 where firstPos = head posesIn
+                                                       firstPosHasAdjacentPieces = checkIfPosHasAdjacentPieces firstPos pieces
+                                                       rest = filterPosesWithAdjacentPieces (tail posesIn) pieces
+
+checkIfPosHasAdjacentPieces:: Position -> [(Position, Col)] -> Bool
+checkIfPosHasAdjacentPieces pos pieces | null pieces = False
+                                       | diffX < 2 && diffY < 2 = True
+                                       | otherwise = checkIfPosHasAdjacentPieces pos (tail pieces)
+                                       where firstPiecePos = fst (head pieces)
+                                             diffX = abs((fst firstPiecePos) - (fst pos))
+                                             diffY = abs((snd firstPiecePos) - (snd pos))
 
 makeNewX:: Int -> Int -> Int -> (Int, Int)
 makeNewX size x y | y == 0 && x > 0 = (size - 1, x -1)
