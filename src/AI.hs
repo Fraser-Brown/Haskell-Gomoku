@@ -44,12 +44,13 @@ makeMoveAI:: World -> World
 makeMoveAI world = newWorld 
                      where newWorld = World (newBoard) (other(turn world)) (maxTimer world) (maxTimer world) (False) (typeOfGame world)
                            newBoard = maybeTo(makeMove (board world) (turn world) newPos)
-                           newPos = chooseMoveMinMax (board world turn world)
+                           newPos = chooseMoveMinMax (board world turn world) 1
 
+-- Generate the list of possible valid moves a given player can make on a Board
 gen:: [(Position, Col)] -> Col -> [Position]
 gen pieces turnCol x y size | x == 0 && y == 0 = []
                             | checkValid pieces (x,y) = (x,y) : rest
-                            | = rest
+                            | = rest -- rest of possible moves on the board which aren't already taken (are valid)
                             where rest = gen pieces turnCol newX newY size
                                   newY = y - 1
                                   if newY == 0 then if x > 0 then do
@@ -58,15 +59,22 @@ gen pieces turnCol x y size | x == 0 && y == 0 = []
                                                     else then newX = 0
                                   else then newX = x
 
+-- applies a move from a player to current Board, returning the new resultant Board with the move added
 makeBoardWithMove:: Position -> Col -> Board -> Board
 makeBoardWithMove movePos turnCol startBoard = newBoard
                                                where newBoard = {size board, target board, newPieces}
                                                      newPieces = pieces board ++ (movePos, turnCol)
 
+-- go along maxDepth moves (from 1) and find the max eval score of nodes on that tree depth
+-- recursively pass max eval scores up stack to top call, to then return move with the descendant node with max eval score
+-- TODO: find a way to factor in opp player moves (ignores them in makeBoardWithMove presently)
 chooseMoveMinMax :: Board -> Col -> Position
-chooseMoveMinMax board turnCol = do let moves = gen pieces board turnCol size board - 1 size board - 1 size board
-                                    do let scores <- [evaluate makeBoardWithMove pos turnCol board | pos <- moves]
-                                          moves !! (elemIndex max scores)
+chooseMoveMinMax board turnCol depth = do let moves = gen pieces board turnCol size board - 1 size board - 1 size board
+                                              if depth == maxDepth then max [evaluate (makeBoardWithMove pos turnCol board) | pos <- moves]
+                                              else if depth /= 1 then max [chooseMoveMinMax (makeBoardWithMove pos turnCol board) turnCol depth + 1 | pos <- moves]
+                                              else then do let scores <- [chooseMoveMinMax (makeBoardWithMove pos turnCol board) turnCol depth + 1 | pos <- moves]
+                                                               moves !! (elemIndex max scores)
+                                              where maxDepth = 3 -- counted from 1
 
 maybeTo:: Maybe a -> a
 maybeTo (Just x) = x
