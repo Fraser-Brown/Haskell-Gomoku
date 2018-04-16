@@ -65,12 +65,12 @@ makeBoardWithMove movePos turnCol startBoard = newBoard
                                                where newBoard = {size board, target board, newPieces}
                                                      newPieces = pieces board ++ (movePos, turnCol)
 
--- go along maxDepth moves (from 1) and find the max eval score of nodes on that tree depth
+-- go along maxDepth moves (from 1) and find the max eval score of descendant nodes at the maximum depth for each branch (starting move)
 -- recursively pass max eval scores up stack to top call, to then return move with the descendant node with max eval score
 -- TODO: find a way to factor in opp player moves (ignores them in makeBoardWithMove presently)
 chooseMoveMinMax :: Board -> Col -> Position
 chooseMoveMinMax board turnCol depth = do let moves = gen pieces board turnCol size board - 1 size board - 1 size board
-                                              if depth == maxDepth then max [evaluate (makeBoardWithMove pos turnCol board) | pos <- moves]
+                                              if depth == maxDepth then max [evaluate (makeBoardWithMove pos turnCol board) turnCol | pos <- moves]
                                               else if depth /= 1 then max [chooseMoveMinMax (makeBoardWithMove pos turnCol board) turnCol depth + 1 | pos <- moves]
                                               else then do let scores <- [chooseMoveMinMax (makeBoardWithMove pos turnCol board) turnCol depth + 1 | pos <- moves]
                                                                moves !! (elemIndex max scores)
