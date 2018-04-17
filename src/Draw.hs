@@ -113,4 +113,3 @@ drawWinner board = if winner == Nothing then Blank
 
 maybeToCol:: Maybe Col -> Col
 maybeToCol (Just x) = x
---TODO: add Translate method to all methods drawing Picture elements, to correctly position them on the window

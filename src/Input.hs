@@ -5,7 +5,7 @@ module Input(handleInputIO) where
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss
 import Board
-import AI
+import AILogic
 import Draw
 
 import Debug.Trace
@@ -108,10 +108,6 @@ prevBoard p = init(p)
 nothingChecker:: Maybe Board -> Bool
 nothingChecker Nothing = False
 nothingChecker (Just x) = True
-
---to deal with the maybe issues
-maybeToBoard:: Maybe Board -> Board
-maybeToBoard (Just x) = x
 
 getPos:: Float -> Float -> Int -> Position
 getPos x y size = (p, q)

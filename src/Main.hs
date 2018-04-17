@@ -12,7 +12,7 @@ import Data.Char
 import Board
 import Draw
 import Input
-import AI
+import AILogic
 
 -- 'play' starts up a graphics window and sets up handlers for dealing
 -- with inputs and updating the world state.
