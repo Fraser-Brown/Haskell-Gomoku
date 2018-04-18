@@ -162,13 +162,12 @@ module Board where
     evaluate:: Board -> Col -> Int
     evaluate board col | winner /= Nothing && getCol(winner) == col = max
                        | winner /= Nothing && getCol(winner) == (other col) = - (max)
-                       | overall /= 0 = traceStack("ownScore = " ++ show ownScore ++ " ; enemyScore = " ++ show enemyScore) overall
-                       | otherwise =  overall
+                       | otherwise = overall
                         where max = maxBound::Int
                               winner = checkWon(board)
                               ownScore = currCombosScore col board
                               enemyScore = currCombosScore (other col) board
-                              overall = ownScore - enemyScore -- TODO:  fix bug which means this is always 0 (values of ownScore vary but always == enemyScore); seems like it's findNoCombosOfLength
+                              overall = ownScore - enemyScore
 
                                                  
     currCombosScore:: Col -> Board -> Int
@@ -176,40 +175,40 @@ module Board where
                                       where comboLengths = [1.. (target board) -1]
 
     -- return int showing how many times there is a combo of pieces of a specific given length and of the same (given) colour, on a given board
-    findNoCombosOfLength:: Int -> Col -> Board -> Int -- TODO: make sure this method only counts combos for the given colour to solve (?) error on line 171
+    findNoCombosOfLength:: Int -> Col -> Board -> Int
     findNoCombosOfLength comboLength col board = r + cl + ci + co
-                                                 where r = rowIncrementer board 0 comboLength 0
-                                                       cl = collumnIncrementer board 0 comboLength 0      
-                                                       ci = crissIncrementer board 0 comboLength 0   
-                                                       co = crossIncrementer board 0 comboLength 0                                      
+                                                 where r = rowIncrementer board col 0 comboLength 0
+                                                       cl = collumnIncrementer board col 0 comboLength 0      
+                                                       ci = crissIncrementer board col 0 comboLength 0   
+                                                       co = crossIncrementer board col 0 comboLength 0                                      
 
     
-    rowIncrementer :: Board -> Int -> Int -> Int -> Int
-    rowIncrementer board x len total | x > s = total
-                                     | otherwise = rowIncrementer board (x+1) len (total + c) 
-                                     where p = pieces board
-                                           s = size board  
-                                           c = counter(filter(\y -> fst(fst y) == x) p) len  
+    rowIncrementer :: Board -> Col -> Int -> Int -> Int -> Int
+    rowIncrementer board col x len total | x > s = total
+                                         | otherwise = rowIncrementer board col (x+1) len (total + c) 
+                                         where p = pieces board
+                                               s = size board  
+                                               c = counter(filter(\y -> fst(fst y) == x && snd(y) == col) p) len  
 
-    collumnIncrementer :: Board -> Int -> Int -> Int -> Int
-    collumnIncrementer board x len total | x > s = total
-                                         | otherwise = collumnIncrementer board (x+1) len (total + c) 
+    collumnIncrementer :: Board -> Col -> Int -> Int -> Int -> Int
+    collumnIncrementer board col x len total | x > s = total
+                                         | otherwise = collumnIncrementer board col (x+1) len (total + c) 
                                           where p = pieces board
                                                 s = size board  
-                                                c = counter (filter(\y -> snd(fst y) == x) p) len   
-    crissIncrementer :: Board -> Int -> Int -> Int -> Int
-    crissIncrementer board x len total | x > s = total
-                                       | otherwise = crissIncrementer board (x+1) len (total + c) 
+                                                c = counter (filter(\y -> snd(fst y) == x && snd(y) == col) p) len   
+    crissIncrementer :: Board -> Col -> Int -> Int -> Int -> Int
+    crissIncrementer board col x len total | x > s = total
+                                       | otherwise = crissIncrementer board col (x+1) len (total + c) 
                                           where p = pieces board
                                                 s = size board  
-                                                c = counter (filter( \y -> snd(fst y) + fst(fst y) == x) p) len 
+                                                c = counter (filter(\y -> snd(fst y) + fst(fst y) == x && snd(y) == col) p) len 
                                                 
-    crossIncrementer :: Board -> Int -> Int -> Int -> Int
-    crossIncrementer board x len total | x > s = total
-                                       | otherwise = crossIncrementer board (x+1) len (total + c) 
+    crossIncrementer :: Board -> Col -> Int -> Int -> Int -> Int
+    crossIncrementer board col x len total | x > s = total
+                                       | otherwise = crossIncrementer board col (x+1) len (total + c) 
                                           where p = pieces board
                                                 s = size board  
-                                                c = counter (filter( \y ->  snd(fst y) - fst(fst y) == x - s) p) len                                               
+                                                c = counter (filter(\y ->  snd(fst y) - fst(fst y) == x - s && snd(y) == col) p) len                                               
     counter ::  [(Position, Col)] -> Int  -> Int
     counter pieces target = length pieces
                               
