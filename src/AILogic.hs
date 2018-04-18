@@ -50,24 +50,32 @@ aiNewBoard world newPos | checker == Nothing = (board world)
 
 -- uses minimax to choose the next move to make                           
 chooseMoveMinMax :: Board  -> Col -> Position
-chooseMoveMinMax board turnCol = traceStack("\n\n\n\n----------chooseMoveMinMax--------------\n\n\n" ++ "nBestCurrentPoses null = " ++ show ( null nBestCurrentPoses))
-                                 traceStack("nBestCurrentPoses length = " ++ show ( length nBestCurrentPoses))
+chooseMoveMinMax board turnCol = --traceStack("\n\n\n\n----------chooseMoveMinMax--------------\n\n\n" ++ "nBestCurrentPoses null = " ++ show ( null nBestCurrentPoses))
+--                                  traceStack("filteredPosesCurrentScores length = " ++ show ( length filteredPosesCurrentScores))
 
-                                 traceStack("\n\nnBestCurrentPoses 0: (" ++ show (fst (getItemInPoses 0 nBestCurrentPoses)) ++ ", " ++ show (snd (getItemInPoses 0 nBestCurrentPoses)) ++ ").")
+--                                  traceStack("filteredPosesCurrentScores 0: (" ++ show (fst (getItemInPoses 0 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 0 filteredPosesCurrentScores)) ++ ").")
+--                                  traceStack("filteredPosesCurrentScores 1: (" ++ show (fst (getItemInPoses 1 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 1 filteredPosesCurrentScores)) ++ ").")
+--                                  traceStack("filteredPosesCurrentScores 2: (" ++ show (fst (getItemInPoses 2 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 2 filteredPosesCurrentScores)) ++ ").")
+--                                  traceStack("filteredPosesCurrentScores 3: (" ++ show (fst (getItemInPoses 3 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 3 filteredPosesCurrentScores)) ++ ").")
+--                                  traceStack("filteredPosesCurrentScores 4: (" ++ show (fst (getItemInPoses 4 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 4 filteredPosesCurrentScores)) ++ ").")
+--                                  traceStack("filteredPosesCurrentScores 5: (" ++ show (fst (getItemInPoses 5 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 5 filteredPosesCurrentScores)) ++ ").")
+--                                  traceStack("filteredPosesCurrentScores 6: (" ++ show (fst (getItemInPoses 6 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 6 filteredPosesCurrentScores)) ++ ").")
+--                                  traceStack("filteredPosesCurrentScores 7: (" ++ show (fst (getItemInPoses 7 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 7 filteredPosesCurrentScores)) ++ ").")
+
+--                                  traceStack("nBestCurrentPoses length = " ++ show ( length nBestCurrentPoses))
+
+--                                  traceStack("\n\nnBestCurrentPoses 0: (" ++ show (fst (getItemInPoses 0 nBestCurrentPoses)) ++ ", " ++ show (snd (getItemInPoses 0 nBestCurrentPoses)) ++ ").")
 
 
-                                 traceStack("nBestPosesAndMaxEvalScores null = " ++ show ( null nBestPosesAndMaxEvalScores))
-                                 traceStack("nBestPosesAndMaxEvalScores length = " ++ show ( length nBestPosesAndMaxEvalScores))
+--                                  traceStack("nBestPosesAndMaxEvalScores null = " ++ show ( null nBestPosesAndMaxEvalScores))
+--                                  traceStack("nBestPosesAndMaxEvalScores length = " ++ show ( length nBestPosesAndMaxEvalScores))
+--                                  traceStack("nBestPosesAndMaxEvalScores 0: ((" ++ show (fst (fst (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores))) ++ ", " ++ show (snd (fst (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores))) ++ "), " ++ show (snd (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores)) ++ ").")
 
-                                 traceStack("\n\nnBestPosesAndMaxEvalScores 0: ((" ++ show (fst (fst (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores))) ++ ", " ++ show (snd (fst (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores))) ++ "), " ++ show (snd (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores)) ++ ").")
-
-                                 traceStack("Optimal move: (" ++ show (fst optimalMove) ++ ", " ++ show (snd optimalMove) ++ ").")
-                                 traceStack(show (snd (head nBestPosesAndMaxEvalScores)) ++ "\n\n\n\n------------------------\n\n\n")
-
-
+--                                  traceStack("Optimal move: (" ++ show (fst optimalMove) ++ ", " ++ show (snd optimalMove) ++ ").")
+--                                  traceStack("\n\n\n\n------------------------\n\n\n")
                                  optimalMove
-                                    where maxDepth = 5 -- how many moves forward in move tree to look
-                                          nBest = 1 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
+                                    where maxDepth = 3 -- how many moves forward in move tree to look
+                                          nBest = 3 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
                                           boardSize = size board
                                           maxCoordinate = boardSize - 1
                                           allPoses = getAllPoses (pieces board) turnCol maxCoordinate maxCoordinate boardSize
@@ -75,7 +83,7 @@ chooseMoveMinMax board turnCol = traceStack("\n\n\n\n----------chooseMoveMinMax-
                                           filteredPosesCurrentScores = getCurrentScoresFromPoses filteredPoses board turnCol
                                           nBestCurrentPoses = getNBestCurrentPoses filteredPosesCurrentScores 0 nBest -- TODO: fix error which makes this empty
                                           nBestPosesAndMaxEvalScores = getMaxEvalScoresFromPoses nBestCurrentPoses turnCol board maxDepth nBest
-                                          optimalMove = findLargestScore nBestPosesAndMaxEvalScores ((-1,-1), 0)
+                                          optimalMove = findLargestScore nBestPosesAndMaxEvalScores ((-1,-1), -1)
 
                                           
 getItemInPoses index list | index == 0 = head list

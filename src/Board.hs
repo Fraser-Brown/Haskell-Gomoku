@@ -161,14 +161,19 @@ module Board where
     
     evaluate:: Board -> Col -> Int
     evaluate board col | winner /= Nothing && getCol(winner) == col = max
-                       | otherwise = currCombosScore col board - currCombosScore (other col) board
+                       | winner /= Nothing && getCol(winner) == (other col) = - (max)
+                       | overall /= 0 = traceStack("ownScore = " ++ show ownScore ++ " ; enemyScore = " ++ show enemyScore) overall
+                       | otherwise =  overall
                         where max = maxBound::Int
                               winner = checkWon(board)
+                              ownScore = currCombosScore col board
+                              enemyScore = currCombosScore (other col) board
+                              overall = ownScore - enemyScore -- TODO:  fix bug which means this is always 0 (values of ownScore vary but always == enemyScore)
 
                                                  
     currCombosScore:: Col -> Board -> Int
     currCombosScore colIn board = sum [(findNoCombosOfLength comboLength colIn board) * (2 ^ (comboLength - 1)) | comboLength <- comboLengths]
-                                      where comboLengths = [1.. (target board) -1] 
+                                      where comboLengths = [1.. (target board) -1]
 
     -- return int showing how many times there is a combo of pieces of a specific given length and of the same (given) colour, on a given board
     findNoCombosOfLength:: Int -> Col -> Board -> Int
