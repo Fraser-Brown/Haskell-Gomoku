@@ -71,7 +71,7 @@ chooseMoveMinMax board turnCol = traceStack("\n\n\n\n----------chooseMoveMinMax-
                                  traceStack("\n\n\n\n------------------------\n\n\n")
                                  optimalMove
                                     where maxDepth = 3 -- how many moves forward in move tree to look
-                                          nBest = 2 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
+                                          nBest = 5 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
                                           boardSize = size board
                                           maxCoordinate = boardSize - 1
                                           allPoses = getAllPoses (pieces board) turnCol maxCoordinate maxCoordinate boardSize

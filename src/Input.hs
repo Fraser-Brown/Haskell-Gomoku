@@ -111,9 +111,8 @@ nothingChecker (Just x) = True
 
 getPos:: Float -> Float -> Int -> Position
 getPos x y size = (p, q)
-             where p = floor((x+250) / (500/fromIntegral(size))) 
-                   q = floor((y+250) / (500/fromIntegral(size))) 
---TODO: Implement appropriate event handlers for input events such as clicking on the board (above); these will need to identify which board position a mouse location maps to, in particular
+             where p = floor((x+250) / (500/fromIntegral(size)))
+                   q = floor((y+250) / (500/fromIntegral(size)))
 
 {- Hint: when the 'World' is in a state where it is the human player's
  turn to move, a mouse press event should calculate which board position

@@ -29,7 +29,7 @@ module Board where
       
     initBoard :: [String] -> Board
     initBoard args | length args == 2  = Board (a) (b) []
-                   | otherwise = Board 6 3 []
+                   | otherwise = Board 15 5 []
                    where a = read(args !! 0) :: Int 
                          b = read(args !! 1) :: Int
 
@@ -161,18 +161,28 @@ module Board where
     
     evaluate:: Board -> Col -> Int
     evaluate board col | winner /= Nothing && getCol(winner) == col = max
-                       | winner /= Nothing && getCol(winner) == (other col) = - (max)
+                       | winner /= Nothing && getCol(winner) == (other col) = ((-9) * maxOverTen)
+                       | winnerSetup /= Nothing && getCol(winnerSetup) == col = (8 * maxOverTen)
+                       | winnerSetup /= Nothing && getCol(winnerSetup) == (other col) = ((-7) * maxOverTen)
                        | otherwise = overall
                         where max = maxBound::Int
+                              maxOverTen = max `div` 10
                               winner = checkWon(board)
+                              winnerSetup = checkWinSetup(board)
                               ownScore = currCombosScore col board
                               enemyScore = currCombosScore (other col) board
                               overall = ownScore - enemyScore
+    
+    -- finds if a board contains a player who is certain to win (provided an intelligent move is made next) and if so returns that player
+    -- e.g. if a combo of length (target length - 1) has been formed with spaces for final pieces on either side to form the winning combo
+    checkWinSetup:: Board -> Maybe Col
+    checkWinSetup board = Nothing -- //TODO: implement this
 
                                                  
     currCombosScore:: Col -> Board -> Int
-    currCombosScore colIn board = sum [(findNoCombosOfLength comboLength colIn board) * (2 ^ (comboLength - 1)) | comboLength <- comboLengths]
+    currCombosScore colIn board = c * sum [(findNoCombosOfLength comboLength colIn board) * (2 ^ (comboLength - 1)) | comboLength <- comboLengths]
                                       where comboLengths = [1.. (target board) -1]
+                                            c = 2000
 
     -- return int showing how many times there is a combo of pieces of a specific given length and of the same (given) colour, on a given board
     findNoCombosOfLength:: Int -> Col -> Board -> Int

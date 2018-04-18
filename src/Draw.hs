@@ -63,8 +63,6 @@ drawGrid n = Pictures [verticalLines n, horiLines n]
 grey :: Color -- this is the type for Colours in gloss, not the Col type used for pieces/players
 grey = makeColor 122 122 122 1
 
--- TODO: finish the next 2 functions to draw correctly positioned grid lines for the Gomoku board
-
 verticalLines :: Int -> Picture
 verticalLines noLines = pictures [drawvertline n noLines | n <- [0..noLines]]
                         

@@ -46,9 +46,8 @@ getNBestCurrentPoses scores index nBest | null scores = []
 -- for a given move, recusrively find its children at a given depth (num of moves) limit
 -- return the maximum eval score of its children
 getMaxEvalScoreForMove :: Board -> Int -> Int -> Col -> Int -> Int
-getMaxEvalScoreForMove startBoard depth maxDepth col nBest | winner /= Nothing && getCol(winner) == col = max
-                                                           | winner /= Nothing && getCol(winner) == (other col) = - (max)
-                                                           | depth == maxDepth = evaluate startBoard col
+getMaxEvalScoreForMove startBoard depth maxDepth col nBest | abs(currentEvalScore) >= (7 * maxOverTen) = currentEvalScore
+                                                           | depth == maxDepth = currentEvalScore
                                                            | otherwise = recursiveResult -- traceStack("\n\n\n\n---------getMaxEvalScoreForMove---------------\n\n\n") traceStack("recursiveChildResults length = " ++ show ( length recursiveChildResults)) traceStack("childBoards length = " ++ show ( length childBoards)) traceStack("nBestPoses length = " ++ show ( length nBestPoses)) traceStack("posesAndCurrentScores length = " ++ show ( length posesAndCurrentScores)) traceStack("\n\n\n\n------------------------\n\n\n") recursiveResult
                                                            where recursiveResult = maximum recursiveChildResults
                                                                  recursiveChildResults = [getMaxEvalScoreForMove childBoard (depth + 1) maxDepth col nBest | childBoard <- childBoards]
@@ -58,7 +57,9 @@ getMaxEvalScoreForMove startBoard depth maxDepth col nBest | winner /= Nothing &
                                                                  filteredPoses = filterPosesWithAdjacentPieces allPoses (pieces startBoard)
                                                                  allPoses = getAllPoses (pieces startBoard) col ((size startBoard) - 1) ((size startBoard) - 1) (size startBoard)
                                                                  max = maxBound::Int
+                                                                 maxOverTen = max `div` 10
                                                                  winner = checkWon(startBoard)
+                                                                 currentEvalScore = evaluate startBoard col
                                                                  
 
 
