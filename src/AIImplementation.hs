@@ -21,7 +21,7 @@ findLargestScore (x : inp) y | snd x > snd y = findLargestScore inp x
 getMaxEvalScoresFromPoses:: [Position] -> Col -> Board -> Int -> Int -> [(Position, Int)]
 getMaxEvalScoresFromPoses poses col startBoard maxDepth nBest = [(pos, findMaxEvalScore pos) | pos <- poses]
                                                                 where findMaxEvalScore posIn = getMaxEvalScoreForMove (makePosBoard posIn) 1 maxDepth col nBest
-                                                                      makePosBoard posIn = makeBoardWithMove posIn col board
+                                                                      makePosBoard posIn = makeBoardWithMove posIn col startBoard
 
 -- Given a list of poses and a starting board and coolour, return a list of tuples of each pos and its immediate eval score if it was to be made (not max recursive)
 getCurrentScoresFromPoses:: [Position] -> Board -> Col -> [(Position, Int)]

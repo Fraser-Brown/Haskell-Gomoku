@@ -41,17 +41,17 @@ makeMoveAI world = newWorld
                            newPos = chooseMoveMinMax (board world) (turn world)
 
 -- uses minimax to choose the next move to make                           
-chooseMoveMinMax :: Board  -> Col -> Position                                    
-chooseMoveMinMax board turnCol = findLargestScore nBestPosesAndMaxEvalScores
-                                    where maxDepth = 5
-                                          nBest = 1
+chooseMoveMinMax :: Board  -> Col -> Position
+chooseMoveMinMax board turnCol = findLargestScore nBestPosesAndMaxEvalScores ((-1,-1), 0)
+                                    where maxDepth = 5 -- how many moves forward in move tree to look
+                                          nBest = 1 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
                                           boardSize = size board
                                           maxCoordinate = boardSize - 1
                                           allPoses = getAllPoses (pieces board) turnCol maxCoordinate maxCoordinate boardSize
                                           filteredPoses = filterPosesWithAdjacentPieces allPoses (pieces board)
                                           filteredPosesCurrentScores = getCurrentScoresFromPoses filteredPoses board turnCol
                                           nBestCurrentPoses = getNBestCurrentPoses filteredPosesCurrentScores 1 nBest
-                                          nBestPosesAndMaxEvalScores = getMaxEvalScoresFromPoses nBestCurrentPoses turnCol board
+                                          nBestPosesAndMaxEvalScores = getMaxEvalScoresFromPoses nBestCurrentPoses turnCol board maxDepth nBest
 
 --TODO: fix error "gomoku: src/AI.hs:139:1-25: Non-exhaustive patterns in function maybeToBoard"
 maybeToBoard:: Maybe Board -> Board
