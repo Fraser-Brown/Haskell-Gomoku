@@ -43,11 +43,11 @@ getNBestCurrentPoses scores index nBest | index == nBest || null scores = []
 getMaxEvalScoreForMove :: Board -> Int -> Int -> Col -> Int -> Int
 getMaxEvalScoreForMove startBoard depth maxDepth col nBest | checkWon startBoard /= Nothing = if getCol (checkWon startBoard) == col then maxBound :: Int else (- (maxBound)) :: Int
                                                            | depth == maxDepth = evaluate startBoard col
-                                                           | otherwise = recursiveResult
+                                                           | otherwise = traceStack("\n\n\n\n------------------------\n\n\n") traceStack("recursiveChildResults length = " ++ show ( length recursiveChildResults)) traceStack("childBoards length = " ++ show ( length childBoards)) traceStack("nBestPoses length = " ++ show ( length nBestPoses)) traceStack("posesAndCurrentScores length = " ++ show ( length posesAndCurrentScores)) traceStack("\n\n\n\n------------------------\n\n\n") recursiveResult
                                                            where recursiveResult = maximum recursiveChildResults
                                                                  recursiveChildResults = [getMaxEvalScoreForMove childBoard (depth + 1) maxDepth col nBest | childBoard <- childBoards]
                                                                  childBoards = [makeBoardWithMove pos col startBoard | pos <- nBestPoses]
-                                                                 nBestPoses = getNBestCurrentPoses posesAndCurrentScores 1 nBest
+                                                                 nBestPoses = getNBestCurrentPoses posesAndCurrentScores 0 nBest
                                                                  posesAndCurrentScores = getCurrentScoresFromPoses filteredPoses startBoard col
                                                                  filteredPoses = filterPosesWithAdjacentPieces allPoses (pieces startBoard)
                                                                  allPoses = getAllPoses (pieces startBoard) col ((size startBoard) - 1) ((size startBoard) - 1) (size startBoard)

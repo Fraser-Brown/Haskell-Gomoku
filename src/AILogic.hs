@@ -45,18 +45,44 @@ aiNewBoard world newPos | checker == Nothing = (board world)
                         | otherwise = maybeToBoard(checker)
                         where checker = (makeMove (board world) (turn world) newPos)
 
+-- TODO: fix eval scores always 0 bug
+-- TODO: fix getNBestCurrentPoses - doesn't return any
+
 -- uses minimax to choose the next move to make                           
 chooseMoveMinMax :: Board  -> Col -> Position
-chooseMoveMinMax board turnCol = findLargestScore nBestPosesAndMaxEvalScores ((-1,-1), 0)
+chooseMoveMinMax board turnCol = traceStack("\n\n\n\n------------------------\n\n\n" ++ "nBestCurrentPoses null = " ++ show ( null nBestCurrentPoses))
+                                 traceStack("nBestCurrentPoses length = " ++ show ( length nBestCurrentPoses))
+
+                                 traceStack("\n\nBestCurrentPoses 0: (" ++ show (fst (getItemInPoses 0 nBestCurrentPoses)) ++ ", " ++ show (snd (getItemInPoses 0 nBestCurrentPoses)) ++ ").")
+
+
+                                 traceStack("nBestPosesAndMaxEvalScores null = " ++ show ( null nBestPosesAndMaxEvalScores))
+                                 traceStack("nBestPosesAndMaxEvalScores length = " ++ show ( length nBestPosesAndMaxEvalScores))
+
+                                 traceStack("\n\nnBestPosesAndMaxEvalScores 0: ((" ++ show (fst (fst (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores))) ++ ", " ++ show (snd (fst (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores))) ++ "), " ++ show (snd (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores)) ++ ").")
+
+                                 traceStack("Optimal move: (" ++ show (fst optimalMove) ++ ", " ++ show (snd optimalMove) ++ ").")
+                                 traceStack(show (snd (head nBestPosesAndMaxEvalScores)) ++ "\n\n\n\n------------------------\n\n\n")
+
+
+                                 optimalMove
                                     where maxDepth = 5 -- how many moves forward in move tree to look
                                           nBest = 1 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
                                           boardSize = size board
-                                          maxCoordinate = boardSize - 2
+                                          maxCoordinate = boardSize - 1
                                           allPoses = getAllPoses (pieces board) turnCol maxCoordinate maxCoordinate boardSize
                                           filteredPoses = filterPosesWithAdjacentPieces allPoses (pieces board)
                                           filteredPosesCurrentScores = getCurrentScoresFromPoses filteredPoses board turnCol
-                                          nBestCurrentPoses = getNBestCurrentPoses filteredPosesCurrentScores 1 nBest
+                                          nBestCurrentPoses = getNBestCurrentPoses filteredPosesCurrentScores 0 nBest -- TODO: fix error which makes this empty
                                           nBestPosesAndMaxEvalScores = getMaxEvalScoresFromPoses nBestCurrentPoses turnCol board maxDepth nBest
+                                          optimalMove = findLargestScore nBestPosesAndMaxEvalScores ((-1,-1), 0)
+
+                                          
+getItemInPoses index list | index == 0 = head list
+                          | otherwise = getItemInPoses (index - 1) (tail list)
+
+getItemInPosesAndScores index list | index == 0 = head list
+                                   | otherwise = getItemInPoses (index - 1) (tail list)
 
                                           
 maybeToBoard:: Maybe Board -> Board
