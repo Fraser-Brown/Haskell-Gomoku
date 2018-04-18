@@ -39,7 +39,7 @@ getNBestCurrentPoses :: [(Position, Int)] -> Int -> Int -> [Position]
 getNBestCurrentPoses scores index nBest | null scores = []
                                         | index == nBest - 1 = [currentBest]
                                         | otherwise = currentBest : rest
-                                          where currentBest = findLargestScore scores ((-1,-1), 0) :: Position
+                                          where currentBest = findLargestScore (tail scores) (head scores) :: Position
                                                 rest = getNBestCurrentPoses (tail scores) (index + 1) nBest :: [Position]
 
 
