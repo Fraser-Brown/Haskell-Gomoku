@@ -8,14 +8,7 @@ import Board
 import AILogic
 import Draw
 
-import Debug.Trace
-
--- Update the world state given an input event. Some sample input events
--- are given; when they happen, there is a trace printed on the console
---
--- trace :: String -> a -> a
--- 'trace' returns its second argument while printing its first argument
--- to stderr, which can be a very useful way of debugging!
+-- Update the world state given an input event
 handleInputIO :: Event -> World -> IO World
 handleInputIO (EventKey (Char 's') Up _ _) world = saveGame(world)
 handleInputIO (EventKey (Char 'c') Up _ _) world = return newWorld 
@@ -47,7 +40,6 @@ printPieces (x:inp) str | snd x == Black = printPieces inp b
                               w = str ++ "AW " ++ show(fst(fst x)) ++ "," ++ show(snd(fst x)) ++ "\n"       
 
 handleInput :: Event -> World -> World
---handleInput (EventMotion (x, y)) b  = trace ("Mouse moved to: " ++ show (x,y)) b
 
 handleInput (EventKey (MouseButton LeftButton) Up m (x, y)) b = newWorld
                                                                 where pos = getPos x y (size (board b))

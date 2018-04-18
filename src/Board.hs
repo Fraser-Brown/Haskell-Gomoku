@@ -1,7 +1,6 @@
 module Board where
     import Data.List (sortBy)
     import Data.Function (on)
-    import Debug.Trace
     
 
     data Col = Black | White
@@ -32,6 +31,10 @@ module Board where
                    | otherwise = Board 15 5 []
                    where a = read(args !! 0) :: Int 
                          b = read(args !! 1) :: Int
+
+    -- TODO: fix general bugginess of AI v player games
+    -- TODO: ensure that moves are paused (with AI) when a winning move is made and winning/losing screen is shown
+    -- TODO: make AI go first (before player) by default
 
 
     -- Default board is 6x6, target is 3 in a row, no initial pieces
@@ -176,7 +179,7 @@ module Board where
     -- finds if a board contains a player who is certain to win (provided an intelligent move is made next) and if so returns that player
     -- e.g. if a combo of length (target length - 1) has been formed with spaces for final pieces on either side to form the winning combo
     checkWinSetup:: Board -> Maybe Col
-    checkWinSetup board = Nothing -- //TODO: implement this
+    checkWinSetup board = Nothing -- TODO: implement this
 
                                                  
     currCombosScore:: Col -> Board -> Int

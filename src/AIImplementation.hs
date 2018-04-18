@@ -2,7 +2,6 @@ module AIImplementation where
 
 import Board
 import System.Random
-import Debug.Trace
 
 -- checks if a given move is valid for a given list of pieces                                                           
 checkValid :: [(Position, Col)] -> Position -> Bool
@@ -17,10 +16,6 @@ findLargestScore ::  [(Position, Int)] -> (Position, Int) -> Position
 findLargestScore [] x = fst x
 findLargestScore (x : inp) y | snd x > snd y = findLargestScore inp x
                              | otherwise = findLargestScore inp y
-
--- findLargestScore [] x = traceStack("Final largest is: ((" ++ show (fst(fst(x))) ++ ", " ++ show (snd(fst(x))) ++ "), " ++ show (snd(x)) ++ ").") fst x
--- findLargestScore (x : inp) y | snd x > snd y = traceStack("Largest now: ((" ++ show (fst(fst(x))) ++ ", " ++ show (snd(fst(x))) ++ "), " ++ show (snd(x)) ++ ").") findLargestScore inp x
---                              | otherwise = traceStack("Largest not: ((" ++ show (fst(fst(x))) ++ ", " ++ show (snd(fst(x))) ++ "), " ++ show (snd(x)) ++ ").") findLargestScore inp y
 
 getMaxEvalScoresFromPoses:: [Position] -> Col -> Board -> Int -> Int -> [(Position, Int)]
 getMaxEvalScoresFromPoses poses col startBoard maxDepth nBest = [(pos, findMaxEvalScore pos) | pos <- poses]
@@ -48,7 +43,7 @@ getNBestCurrentPoses scores index nBest | null scores = []
 getMaxEvalScoreForMove :: Board -> Int -> Int -> Col -> Int -> Int
 getMaxEvalScoreForMove startBoard depth maxDepth col nBest | abs(currentEvalScore) >= (7 * maxOverTen) = currentEvalScore
                                                            | depth == maxDepth = currentEvalScore
-                                                           | otherwise = recursiveResult -- traceStack("\n\n\n\n---------getMaxEvalScoreForMove---------------\n\n\n") traceStack("recursiveChildResults length = " ++ show ( length recursiveChildResults)) traceStack("childBoards length = " ++ show ( length childBoards)) traceStack("nBestPoses length = " ++ show ( length nBestPoses)) traceStack("posesAndCurrentScores length = " ++ show ( length posesAndCurrentScores)) traceStack("\n\n\n\n------------------------\n\n\n") recursiveResult
+                                                           | otherwise = recursiveResult
                                                            where recursiveResult = maximum recursiveChildResults
                                                                  recursiveChildResults = [getMaxEvalScoreForMove childBoard (depth + 1) maxDepth col nBest | childBoard <- childBoards]
                                                                  childBoards = [makeBoardWithMove pos col startBoard | pos <- nBestPoses]

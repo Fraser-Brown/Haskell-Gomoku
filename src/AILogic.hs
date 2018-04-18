@@ -5,7 +5,6 @@ module AILogic where
 import Board
 import AIImplementation
 import System.Random
-import Debug.Trace
 
 data GameTree = GameTree { game_board :: Board,
                            game_turn :: Col,
@@ -46,41 +45,22 @@ aiNewBoard world newPos | checker == Nothing = (board world)
 
 -- uses minimax to choose the next move to make                           
 chooseMoveMinMax :: Board  -> Col -> Position
-chooseMoveMinMax board turnCol = traceStack("\n\n\n\n----------chooseMoveMinMax--------------\n\n\n" ++ "nBestCurrentPoses null = " ++ show ( null nBestCurrentPoses))
-                                 traceStack("filteredPosesCurrentScores length = " ++ show ( length filteredPosesCurrentScores))
-
-                                 traceStack("filteredPosesCurrentScores 0: (" ++ show (fst (getItemInPoses 0 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 0 filteredPosesCurrentScores)) ++ ").")
-                                 traceStack("filteredPosesCurrentScores 1: (" ++ show (fst (getItemInPoses 1 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 1 filteredPosesCurrentScores)) ++ ").")
-                                 traceStack("filteredPosesCurrentScores 2: (" ++ show (fst (getItemInPoses 2 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 2 filteredPosesCurrentScores)) ++ ").")
-                                 traceStack("filteredPosesCurrentScores 3: (" ++ show (fst (getItemInPoses 3 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 3 filteredPosesCurrentScores)) ++ ").")
-                                 traceStack("filteredPosesCurrentScores 4: (" ++ show (fst (getItemInPoses 4 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 4 filteredPosesCurrentScores)) ++ ").")
-                                 traceStack("filteredPosesCurrentScores 5: (" ++ show (fst (getItemInPoses 5 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 5 filteredPosesCurrentScores)) ++ ").")
-                                 traceStack("filteredPosesCurrentScores 6: (" ++ show (fst (getItemInPoses 6 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 6 filteredPosesCurrentScores)) ++ ").")
-                                 traceStack("filteredPosesCurrentScores 7: (" ++ show (fst (getItemInPoses 7 filteredPosesCurrentScores)) ++ ", " ++ show (snd (getItemInPoses 7 filteredPosesCurrentScores)) ++ ").")
-
-                                 traceStack("nBestCurrentPoses length = " ++ show ( length nBestCurrentPoses))
-
-                                 traceStack("\n\nnBestCurrentPoses 0: (" ++ show (fst (getItemInPoses 0 nBestCurrentPoses)) ++ ", " ++ show (snd (getItemInPoses 0 nBestCurrentPoses)) ++ ").")
-
-
-                                 traceStack("nBestPosesAndMaxEvalScores null = " ++ show ( null nBestPosesAndMaxEvalScores))
-                                 traceStack("nBestPosesAndMaxEvalScores length = " ++ show ( length nBestPosesAndMaxEvalScores))
-                                 traceStack("nBestPosesAndMaxEvalScores 0: ((" ++ show (fst (fst (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores))) ++ ", " ++ show (snd (fst (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores))) ++ "), " ++ show (snd (getItemInPosesAndScores 0 nBestPosesAndMaxEvalScores)) ++ ").")
-
-                                 traceStack("Optimal move: (" ++ show (fst optimalMove) ++ ", " ++ show (snd optimalMove) ++ ").")
-                                 traceStack("\n\n\n\n------------------------\n\n\n")
-                                 optimalMove
-                                    where maxDepth = 3 -- how many moves forward in move tree to look
-                                          nBest = 5 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
-                                          boardSize = size board
-                                          maxCoordinate = boardSize - 1
-                                          allPoses = getAllPoses (pieces board) turnCol maxCoordinate maxCoordinate boardSize
-                                          filteredPoses = filterPosesWithAdjacentPieces allPoses (pieces board)
-                                          filteredPosesCurrentScores = getCurrentScoresFromPoses filteredPoses board turnCol
-                                          nBestCurrentPoses = getNBestCurrentPoses filteredPosesCurrentScores 0 nBest
-                                          nBestPosesAndMaxEvalScores = getMaxEvalScoresFromPoses nBestCurrentPoses turnCol board maxDepth nBest
-                                          optimalMove = findLargestScore (tail nBestPosesAndMaxEvalScores) (head nBestPosesAndMaxEvalScores)
-                                          max = maxBound::Int
+chooseMoveMinMax board turnCol | null (pieces board) = (centreCoordinate, centreCoordinate) -- if first move choose a central piece
+                               | otherwise = optimalMove
+                                             where maxDepth = 3 -- how many moves forward in move tree to look
+                                                   nBest = 5 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
+                                                   boardSize = size board
+                                                   maxCoordinate = boardSize - 1
+                                                   allPoses = getAllPoses (pieces board) turnCol maxCoordinate maxCoordinate boardSize
+                                                   filteredPoses = filterPosesWithAdjacentPieces allPoses (pieces board)
+                                                   filteredPosesCurrentScores = getCurrentScoresFromPoses filteredPoses board turnCol
+                                                   nBestCurrentPoses = getNBestCurrentPoses filteredPosesCurrentScores 0 nBest
+                                                   nBestPosesAndMaxEvalScores = getMaxEvalScoresFromPoses nBestCurrentPoses turnCol board maxDepth nBest
+                                                   optimalMove = findLargestScore (tail nBestPosesAndMaxEvalScores) (head nBestPosesAndMaxEvalScores)
+                                                   centreCoordinate = adjustedBoardSize `div` 2
+                                                   adjustedBoardSize | (size board) `mod` 2 == 0 = (size board)
+                                                                     | otherwise = (size board) + 1
+                                                   max = maxBound::Int
 
                                           
 getItemInPoses index list | index == 0 = head list
