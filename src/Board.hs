@@ -168,7 +168,7 @@ module Board where
                               winner = checkWon(board)
                               ownScore = currCombosScore col board
                               enemyScore = currCombosScore (other col) board
-                              overall = ownScore - enemyScore -- TODO:  fix bug which means this is always 0 (values of ownScore vary but always == enemyScore)
+                              overall = ownScore - enemyScore -- TODO:  fix bug which means this is always 0 (values of ownScore vary but always == enemyScore); seems like it's findNoCombosOfLength
 
                                                  
     currCombosScore:: Col -> Board -> Int
@@ -176,7 +176,7 @@ module Board where
                                       where comboLengths = [1.. (target board) -1]
 
     -- return int showing how many times there is a combo of pieces of a specific given length and of the same (given) colour, on a given board
-    findNoCombosOfLength:: Int -> Col -> Board -> Int
+    findNoCombosOfLength:: Int -> Col -> Board -> Int -- TODO: make sure this method only counts combos for the given colour to solve (?) error on line 171
     findNoCombosOfLength comboLength col board = r + cl + ci + co
                                                  where r = rowIncrementer board 0 comboLength 0
                                                        cl = collumnIncrementer board 0 comboLength 0      
