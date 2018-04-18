@@ -18,6 +18,10 @@ findLargestScore [] x = fst x
 findLargestScore (x : inp) y | snd x > snd y = findLargestScore inp x
                              | otherwise = findLargestScore inp y
 
+-- findLargestScore [] x = traceStack("Final largest is: ((" ++ show (fst(fst(x))) ++ ", " ++ show (snd(fst(x))) ++ "), " ++ show (snd(x)) ++ ").") fst x
+-- findLargestScore (x : inp) y | snd x > snd y = traceStack("Largest now: ((" ++ show (fst(fst(x))) ++ ", " ++ show (snd(fst(x))) ++ "), " ++ show (snd(x)) ++ ").") findLargestScore inp x
+--                              | otherwise = traceStack("Largest not: ((" ++ show (fst(fst(x))) ++ ", " ++ show (snd(fst(x))) ++ "), " ++ show (snd(x)) ++ ").") findLargestScore inp y
+
 getMaxEvalScoresFromPoses:: [Position] -> Col -> Board -> Int -> Int -> [(Position, Int)]
 getMaxEvalScoresFromPoses poses col startBoard maxDepth nBest = [(pos, findMaxEvalScore pos) | pos <- poses]
                                                                 where findMaxEvalScore posIn = getMaxEvalScoreForMove (makePosBoard posIn) 1 maxDepth col nBest
@@ -32,7 +36,8 @@ getCurrentScoresFromPoses poses startBoard col = [(pos, (currentPosScore pos)) |
 
 -- get the n best positions (by immediate eval score) for the current board and a given colour
 getNBestCurrentPoses :: [(Position, Int)] -> Int -> Int -> [Position]
-getNBestCurrentPoses scores index nBest | index == nBest || null scores = []
+getNBestCurrentPoses scores index nBest | null scores = []
+                                        | index == nBest - 1 = [currentBest]
                                         | otherwise = currentBest : rest
                                           where currentBest = findLargestScore scores ((-1,-1), 0) :: Position
                                                 rest = getNBestCurrentPoses (tail scores) (index + 1) nBest :: [Position]
@@ -43,7 +48,7 @@ getNBestCurrentPoses scores index nBest | index == nBest || null scores = []
 getMaxEvalScoreForMove :: Board -> Int -> Int -> Col -> Int -> Int
 getMaxEvalScoreForMove startBoard depth maxDepth col nBest | checkWon startBoard /= Nothing = if getCol (checkWon startBoard) == col then maxBound :: Int else (- (maxBound)) :: Int
                                                            | depth == maxDepth = evaluate startBoard col
-                                                           | otherwise = traceStack("\n\n\n\n------------------------\n\n\n") traceStack("recursiveChildResults length = " ++ show ( length recursiveChildResults)) traceStack("childBoards length = " ++ show ( length childBoards)) traceStack("nBestPoses length = " ++ show ( length nBestPoses)) traceStack("posesAndCurrentScores length = " ++ show ( length posesAndCurrentScores)) traceStack("\n\n\n\n------------------------\n\n\n") recursiveResult
+                                                           | otherwise = traceStack("\n\n\n\n---------getMaxEvalScoreForMove---------------\n\n\n") traceStack("recursiveChildResults length = " ++ show ( length recursiveChildResults)) traceStack("childBoards length = " ++ show ( length childBoards)) traceStack("nBestPoses length = " ++ show ( length nBestPoses)) traceStack("posesAndCurrentScores length = " ++ show ( length posesAndCurrentScores)) traceStack("\n\n\n\n------------------------\n\n\n") recursiveResult
                                                            where recursiveResult = maximum recursiveChildResults
                                                                  recursiveChildResults = [getMaxEvalScoreForMove childBoard (depth + 1) maxDepth col nBest | childBoard <- childBoards]
                                                                  childBoards = [makeBoardWithMove pos col startBoard | pos <- nBestPoses]

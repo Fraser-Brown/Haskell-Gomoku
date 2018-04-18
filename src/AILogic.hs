@@ -46,14 +46,14 @@ aiNewBoard world newPos | checker == Nothing = (board world)
                         where checker = (makeMove (board world) (turn world) newPos)
 
 -- TODO: fix eval scores always 0 bug
--- TODO: fix getNBestCurrentPoses - doesn't return any
+-- TODO: fix getNBestCurrentPoses - doesn't return any ; this is caused by above (90% sure) since scores always 0 so none set to max in findLargestScore, so optimalMove stays as default (-1,-1)
 
 -- uses minimax to choose the next move to make                           
 chooseMoveMinMax :: Board  -> Col -> Position
-chooseMoveMinMax board turnCol = traceStack("\n\n\n\n------------------------\n\n\n" ++ "nBestCurrentPoses null = " ++ show ( null nBestCurrentPoses))
+chooseMoveMinMax board turnCol = traceStack("\n\n\n\n----------chooseMoveMinMax--------------\n\n\n" ++ "nBestCurrentPoses null = " ++ show ( null nBestCurrentPoses))
                                  traceStack("nBestCurrentPoses length = " ++ show ( length nBestCurrentPoses))
 
-                                 traceStack("\n\nBestCurrentPoses 0: (" ++ show (fst (getItemInPoses 0 nBestCurrentPoses)) ++ ", " ++ show (snd (getItemInPoses 0 nBestCurrentPoses)) ++ ").")
+                                 traceStack("\n\nnBestCurrentPoses 0: (" ++ show (fst (getItemInPoses 0 nBestCurrentPoses)) ++ ", " ++ show (snd (getItemInPoses 0 nBestCurrentPoses)) ++ ").")
 
 
                                  traceStack("nBestPosesAndMaxEvalScores null = " ++ show ( null nBestPosesAndMaxEvalScores))
