@@ -10,7 +10,7 @@ data GameTree = GameTree { game_board :: Board,
                            game_turn :: Col,
                            next_moves :: [(Position, GameTree)] }
 
-
+-- TODO: optimise this to be faster if possible
  
 updateWorld :: Float -- ^ time since last update (you can ignore this)
             -> World -- ^ current world state

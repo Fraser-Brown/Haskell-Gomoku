@@ -28,7 +28,7 @@ module Board where
       
     initBoard :: [String] -> Board
     initBoard args | length args == 2  = Board (a) (b) []
-                   | otherwise = Board 15 5 []
+                   | otherwise = Board 6 3 []
                    where a = read(args !! 0) :: Int 
                          b = read(args !! 1) :: Int
 
