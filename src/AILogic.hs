@@ -37,8 +37,13 @@ timedWorld w = newWorld
 makeMoveAI:: World -> World                                                              
 makeMoveAI world = newWorld 
                      where newWorld = World (newBoard) (other(turn world)) (maxTimer world) (maxTimer world) (False) (typeOfGame world)
-                           newBoard = maybeToBoard(makeMove (board world) (turn world) newPos)
+                           newBoard = aiNewBoard (world) newPos
                            newPos = chooseMoveMinMax (board world) (turn world)
+
+aiNewBoard:: World -> Position -> Board
+aiNewBoard world newPos | checker == Nothing = (board world) 
+                        | otherwise = maybeToBoard(checker)
+                        where checker = (makeMove (board world) (turn world) newPos)
 
 -- uses minimax to choose the next move to make                           
 chooseMoveMinMax :: Board  -> Col -> Position
@@ -46,14 +51,14 @@ chooseMoveMinMax board turnCol = findLargestScore nBestPosesAndMaxEvalScores ((-
                                     where maxDepth = 5 -- how many moves forward in move tree to look
                                           nBest = 1 -- how many of nodes (ordered by largest to lowest current score) on each tree level to examine recursively
                                           boardSize = size board
-                                          maxCoordinate = boardSize - 1
+                                          maxCoordinate = boardSize - 2
                                           allPoses = getAllPoses (pieces board) turnCol maxCoordinate maxCoordinate boardSize
                                           filteredPoses = filterPosesWithAdjacentPieces allPoses (pieces board)
                                           filteredPosesCurrentScores = getCurrentScoresFromPoses filteredPoses board turnCol
                                           nBestCurrentPoses = getNBestCurrentPoses filteredPosesCurrentScores 1 nBest
                                           nBestPosesAndMaxEvalScores = getMaxEvalScoresFromPoses nBestCurrentPoses turnCol board maxDepth nBest
 
---TODO: fix error "gomoku: src/AI.hs:139:1-25: Non-exhaustive patterns in function maybeToBoard"
+                                          
 maybeToBoard:: Maybe Board -> Board
 maybeToBoard (Just x) = x
 

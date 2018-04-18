@@ -25,7 +25,7 @@ module Board where
                          target :: Int,
                          pieces :: [(Position, Col)]
                        }
-      deriving Show
+      deriving (Show,Eq)
       
     initBoard :: [String] -> Board
     initBoard args | length args == 2  = Board (a) (b) []
