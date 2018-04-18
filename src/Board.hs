@@ -33,7 +33,7 @@ module Board where
                          b = read(args !! 1) :: Int
 
     -- TODO: fix general bugginess of AI v player games
-    -- TODO: ensure that moves are paused (with AI) when a winning move is made and winning/losing screen is shown
+    -- TODO: ensure that moves (world updates, timers, etc) are paused (with AI) when a winning move is made and winning/losing screen is shown, when the AI is deciding on a move, and when the game is over (inc. when all grid squares filled)
     -- TODO: make AI go first (before player) by default
 
 
