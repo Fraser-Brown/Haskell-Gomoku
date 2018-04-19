@@ -34,7 +34,7 @@ main :: IO ()
 main =do args <- getArgs
          world <- readWorld args
 
-         playIO FullScreen yellow 10
+         playIO (InWindow "Gomoku" (1000, 1000) (100,100)) yellow 10
                world
                drawWorld -- in Draw.hs
                handleInputIO -- in Input.hs

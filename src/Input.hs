@@ -14,7 +14,7 @@ handleInputIO (EventKey (Char 's') Up _ _) world = saveGame(world)
 handleInputIO (EventKey (Char 'c') Up _ _) world = return newWorld 
                                                  where newWorld = World (board world) (other(turn world)) (timer world) (maxTimer world) (paused world) ("PVP")
 handleInputIO (EventKey (Char 'a') Up _ _) world = return newWorld 
-                                                 where newWorld = World (board world) (other(turn world)) (timer world) (maxTimer world) (paused world) ("AI")                                                 
+                                                 where newWorld = World (board world) (turn world) (timer world) (maxTimer world) (paused world) ("AI")                                                 
 handleInputIO event world |(typeOfGame world) == "BLANK" = return world
                           |otherwise = return $ handleInput event world
  
