@@ -12,9 +12,15 @@ import Draw
 handleInputIO :: Event -> World -> IO World
 handleInputIO (EventKey (Char 's') Up _ _) world = saveGame(world)
 handleInputIO (EventKey (Char 'c') Up _ _) world = return newWorld 
-                                                 where newWorld = World (board world) (other(turn world)) (timer world) (maxTimer world) (paused world) ("PVP")
+                                                 where newWorld = World (board world) (turn world) (timer world) (maxTimer world) (paused world) ("PVP")
 handleInputIO (EventKey (Char 'a') Up _ _) world = return newWorld 
-                                                 where newWorld = World (board world) (turn world) (timer world) (maxTimer world) (paused world) ("AI")                                                 
+                                                 where newWorld = World (board world) (turn world) (timer world) (maxTimer world) (paused world) ("AI")    
+handleInputIO (EventKey (Char 't') Up _ _) world = return newWorld 
+                                                 where newWorld = World (board world) (turn world) (timer world) (maxTimer world) (paused world) ("TBT")
+handleInputIO (EventKey (Char 'f') Up _ _) world = return newWorld 
+                                                 where newWorld = World (largerB) (turn world) (timer world) (maxTimer world) (paused world) ("FBF") 
+                                                       b = board world
+                                                       largerB = Board (size b) (4) (pieces b)                                                                                                                                                   
 handleInputIO event world |(typeOfGame world) == "BLANK" = return world
                           |otherwise = return $ handleInput event world
  
@@ -41,7 +47,9 @@ printPieces (x:inp) str | snd x == Black = printPieces inp b
 
 handleInput :: Event -> World -> World
 
-handleInput (EventKey (MouseButton LeftButton) Up m (x, y)) b = newWorld
+handleInput (EventKey (MouseButton LeftButton) Up m (x, y)) b  | (typeOfGame b) == "TBT" = xGame b pos 3
+                                                               | (typeOfGame b) == "FBF" = xGame b pos 4   
+                                                               | otherwise = newWorld
                                                                 where pos = getPos x y (size (board b))
                                                                       ans = makeMove (board b) (turn b) pos 
                                                                       newWorld = if nothingChecker(ans) == False then  b
@@ -85,6 +93,16 @@ handleInput(EventKey (SpecialKey KeyLeft) Up _ _) world = newWorld
  
                                                                                                                                              
 handleInput e b = b
+
+xGame:: World -> Position -> Int -> World
+xGame world pos t | checked == False =  world
+                  | validXMove (getAns(ans)) (turn world) t == False =  world
+                  | otherwise = World (maybeToBoard(ans)) (other(turn world)) (maxTimer world) (maxTimer world) (False) (typeOfGame world)
+                    where ans = makeMove (board world) (turn world) pos 
+                          checked = nothingChecker(ans)
+                        
+getAns:: Maybe Board -> Board
+getAns (Just x) = x
 
 removeOverflow:: [(Position, Col)]-> [(Position, Col)] -> Int -> [(Position, Col)]
 removeOverflow [] pieces _ = pieces

@@ -19,6 +19,8 @@ updateWorld :: Float -- ^ time since last update (you can ignore this)
 updateWorld t w | (typeOfGame w) == "AI" && (turn w) == Black = return (makeMoveAI w)
                 | (typeOfGame w) == "AI" = return (timedWorld w)  
                 | (typeOfGame w) == "PVP"  = return (timedWorld w)
+                | (typeOfGame w) == "TBT"  = return (timedWorld w)
+                | (typeOfGame w) == "FBF"  = return (timedWorld w)
                 | otherwise = return w 
 
 

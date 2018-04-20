@@ -36,15 +36,17 @@ gamePicture world | (typeOfGame world) == "BLANK" = menu
                           
 drawMenu:: Picture
 drawMenu = Pictures[Translate (-150) 400 $ Scale  0.6 0.6 $ Text("Gomoku"),
-            Translate (-300) 300 $ Scale  0.2 0.2 $ Text("left click : set current players piece"),
-            Translate (-300) 250 $ Scale   0.2 0.2 $ Text("right click - undo move "),
-            Translate (-300) 200 $ Scale   0.2 0.2 $ Text("p- pause / unpause timer "),
-            Translate (-300) 150 $ Scale   0.2 0.2 $ Text("up/down arrow - increase/decrease size of the board "),
-            Translate (-300) 100 $ Scale   0.2 0.2 $ Text("right/left - increase/decrease target for game "),
-            Translate (-300) 50 $ Scale   0.2 0.2 $ Text("s - save current game at current point to saveME.txt "),
-            Translate (-300) 0 $ Scale   0.2 0.2 $ Text("./gomoku filename.txt -> load previous saved game"),
-            Translate (-300) (-100) $ Scale   0.4 0.4 $ Text("Press C to play PVP"),
-            Translate (-300) (-200) $ Scale   0.4 0.4 $ Text("Press A to play vs AI")]
+            Translate (-400) 300 $ Scale  0.2 0.2 $ Text("left click : set current players piece"),
+            Translate (-400) 250 $ Scale   0.2 0.2 $ Text("right click - undo move "),
+            Translate (-400) 200 $ Scale   0.2 0.2 $ Text("p- pause / unpause timer "),
+            Translate (-400) 150 $ Scale   0.2 0.2 $ Text("up/down arrow - increase/decrease size of the board "),
+            Translate (-400) 100 $ Scale   0.2 0.2 $ Text("right/left - increase/decrease target for game "),
+            Translate (-400) 50 $ Scale   0.2 0.2 $ Text("s - save current game at current point to saveME.txt "),
+            Translate (-400) 0 $ Scale   0.2 0.2 $ Text("./gomoku filename.txt -> load previous saved game"),
+            Translate (-400) (-100) $ Scale   0.4 0.4 $ Text("Press C to play PVP"),
+            Translate (-400) (-200) $ Scale   0.4 0.4 $ Text("Press A to play vs AI"),
+            Translate (-400) (-300) $ Scale   0.4 0.4 $ Text("Press T to three and three (PVP)"),
+            Translate (-400) (-400) $ Scale   0.4 0.4 $ Text("Press F to four and four (PVP)")]
 
          
                           

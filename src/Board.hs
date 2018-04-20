@@ -60,7 +60,28 @@ module Board where
     makeMove  board col pos = if (0 <= fst pos && fst pos < size board) && (0 <= snd pos && snd pos < size board) && (isEmpty (pieces board) pos)
                                 then Just (Board (size board) (target board) ((pieces board) ++ [(pos, col)]))
                                 else Nothing
-
+    
+    validXMove :: Board -> Col -> Int -> Bool
+    validXMove board col check | col == White = True
+                                   | valid == False = False--given that it is not possible to place a piece which coul create 2 of the same orientation of victory
+                                   | otherwise = True  
+                                    where b = Board (size board) check (pieces board)   
+                                          r = ((checkRow b 0) /= Nothing)
+                                          c = ((checkCol b 0) /= Nothing)
+                                          d1 = ((checkDiagonalCriss b 0) /= Nothing)
+                                          d2 = ((checkDiagonalCross b 0) /= Nothing)
+                                          valid = singleCheck r c d1 d2
+    
+    singleCheck:: Bool -> Bool -> Bool -> Bool -> Bool
+    singleCheck a b c d | a && b = False    
+                        | a && c = False
+                        | a && d = False  
+                        | b && c = False   
+                        | b && d = False
+                        | c && d = False  
+                        | otherwise = True                               
+                                 
+                                 
   --Need to add in the check won to output if the game has been won
 
     isEmpty :: [(Position, Col)] -> Position -> Bool
