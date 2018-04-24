@@ -63,13 +63,6 @@ chooseMoveMinMax board turnCol | null (pieces board) = (centreCoordinate, centre
                                                    max = maxBound::Int
 
                                           
-getItemInPoses index list | index == 0 = head list
-                          | otherwise = getItemInPoses (index - 1) (tail list)
-
-getItemInPosesAndScores index list | index == 0 = head list
-                                   | otherwise = getItemInPoses (index - 1) (tail list)
-
-                                          
 maybeToBoard:: Maybe Board -> Board
 maybeToBoard (Just x) = x
 
