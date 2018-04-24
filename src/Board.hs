@@ -32,11 +32,6 @@ module Board where
                    where a = read(args !! 0) :: Int 
                          b = read(args !! 1) :: Int
 
-    -- TODO: fix general bugginess of AI v player games
-    -- TODO: ensure that moves (world updates, timers, etc) are paused (with AI) when a winning move is made and winning/losing screen is shown, 
-    --      when the AI is deciding on a move, and when the game is over (inc. when all grid squares filled)
-    -- TODO: make AI go first (before player) by default
-
 
     -- Default board is 6x6, target is 3 in a row, no initial pieces
    
