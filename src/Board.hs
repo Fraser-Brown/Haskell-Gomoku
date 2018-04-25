@@ -76,8 +76,6 @@ module Board where
                         | c && d = False  
                         | otherwise = True                               
                                  
-                                 
-  --Need to add in the check won to output if the game has been won
 
     isEmpty :: [(Position, Col)] -> Position -> Bool
     isEmpty [] pos = True
@@ -192,11 +190,6 @@ module Board where
                               ownScore = currCombosScore col board
                               enemyScore = currCombosScore (other col) board
                               overall = ownScore - enemyScore
-    
-    -- finds if a board contains a player who is certain to win (provided an intelligent move is made next) and if so returns that player
-    -- e.g. if a combo of length (target length - 1) has been formed with spaces for final pieces on either side to form the winning combo
-    checkWinSetup:: Board -> Maybe Col
-    checkWinSetup board = Nothing -- TODO: implement this
 
                                                  
     currCombosScore:: Col -> Board -> Int

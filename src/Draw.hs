@@ -23,7 +23,6 @@ gamePicture :: World -> Picture
 gamePicture world | (typeOfGame world) == "BLANK" = menu
                   | otherwise = game    
                     where game = Pictures [drawNextPlayer (show(turn world)), 
-                              --drawTargetReminder(target (board world)),
                                           drawGrid (size (board world)),
                                           drawPieces(pieces (board world)) (size (board world)), 
                                           drawTitle,
@@ -53,10 +52,6 @@ drawMenu = Pictures[Translate (-150) 400 $ Scale  0.6 0.6 $ Text("Gomoku"),
 drawNextPlayer :: String -> Picture
 -- draw text informing the user of which player (Black/White) is next
 drawNextPlayer nPlyr = Translate (-150) 300 $ Scale 0.2 0.2 $ Text $ nPlyr ++ " has the next move"
-
---drawTargetReminder :: Int -> Picture
--- draw text informing user of the target x in a row to get
---drawTargetReminder tgt =  Translate -100 200 $ Scale 0.2 0.2 $ Text $ "Target: " ++ (show tgt) ++ " in a row"
 
 drawGrid :: Int -> Picture
 -- draw the lines of the game grid, where n is the grid width and height

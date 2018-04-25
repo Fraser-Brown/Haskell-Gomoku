@@ -59,7 +59,7 @@ readWorld args = case args of
 
 
 cmdLineWorld::[String] -> World     
-cmdLineWorld args = World b Black 100 100 False "BLANK" --may wish to add full cmd line args and input checking
+cmdLineWorld args = World b Black 100 100 False "BLANK" 
                   where b = Board s t []
                         s = read(args!!0) :: Int
                         t = read(args!!1) :: Int                                         
@@ -67,7 +67,7 @@ cmdLineWorld args = World b Black 100 100 False "BLANK" --may wish to add full c
 createFromFile :: [String] -> World
 createFromFile [] = World (initBoard []) Black 100 100 False "BLANK"
 
-createFromFile inp = World (x) (y) (findTimeLimt(inp)) (findTimeLimt(inp)) (False) "BLANK" --may wish to add this on load
+createFromFile inp = World (x) (y) (findTimeLimt(inp)) (findTimeLimt(inp)) (False) "BLANK" 
                      where x = (Board (findSize inp) (findTarget inp) (findPieces inp []))
                            y = (findPlayer inp)           
 
@@ -90,7 +90,6 @@ findTimeLimt :: [String] -> Int
 findTimeLimt (x:inp) | take 2 x == "TL" = read(filter(\y -> isDigit(y)) x) :: Int
                      | length inp > 0 = findTimeLimt(inp)     
                      | otherwise = 100                 
---the three above could be condensed into 1 method, left for readability for now
 
 
 findPlayer :: [String] -> Col 
